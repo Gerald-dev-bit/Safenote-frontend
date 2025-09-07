@@ -3,7 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5000"; // Change to your backend URL in production
+axios.defaults.baseURL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 interface NotepadProps {
   noteId: string;
@@ -39,7 +40,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [isIpadSize, setIsIpadSize] = useState(false);
   const [fontSize, setFontSize] = useState(14);
   const navigate = useNavigate();
-  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeout = useRef<number | null>(null);
 
   useEffect(() => {
     if (noteId !== noteId.toLowerCase()) {
@@ -101,14 +102,14 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
 
   useEffect(() => {
     if (saveTimeout.current) {
-      clearTimeout(saveTimeout.current);
+      window.clearTimeout(saveTimeout.current);
     }
 
     if (savedContent === null || content === savedContent) {
       return;
     }
 
-    saveTimeout.current = setTimeout(() => {
+    saveTimeout.current = window.setTimeout(() => {
       const saveData = verifiedPassword
         ? { content, password: verifiedPassword }
         : { content };
@@ -131,7 +132,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
 
     return () => {
       if (saveTimeout.current) {
-        clearTimeout(saveTimeout.current);
+        window.clearTimeout(saveTimeout.current);
       }
     };
   }, [content, noteId, verifiedPassword, savedContent]);
@@ -217,10 +218,10 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     setShowSetPasswordModal(true);
   };
 
-  // const openRenameModal = () => {
-  //   setShowSetPasswordModal(false);
-  //   setShowRenameModal(true);
-  // };
+  const openRenameModal = () => {
+    setShowSetPasswordModal(false);
+    setShowRenameModal(true);
+  };
 
   const toggleSpellCheck = () => {
     setSpellCheckEnabled(!spellCheckEnabled);
@@ -272,6 +273,10 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             <div className="tooltip" onClick={openSetPasswordModal}>
               <i className="fas fa-lock"></i>
               <span className="tooltiptext">Password Option</span>
+            </div>
+            <div className="tooltip" onClick={openRenameModal}>
+              <i className="fas fa-edit"></i>
+              <span className="tooltiptext">Rename URL</span>
             </div>
             <div
               className={`tooltip${spellCheckEnabled ? " active" : ""}`}

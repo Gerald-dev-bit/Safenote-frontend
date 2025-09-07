@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5000"; // Change to your backend URL in production
+axios.defaults.baseURL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 interface RawViewProps {
   noteId: string;
