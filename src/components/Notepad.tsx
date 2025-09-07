@@ -28,11 +28,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
   const [verifiedPassword, setVerifiedPassword] = useState<string | null>(null);
-  const [showRenameModal, setShowRenameModal] = useState(false);
-  const [newNoteId, setNewNoteId] = useState(noteId);
-  const [isChecking, setIsChecking] = useState(false);
-  const [isUnique, setIsUnique] = useState(false);
-  const [renameError, setRenameError] = useState("");
   const [verifyError, setVerifyError] = useState("");
   const [spellCheckEnabled, setSpellCheckEnabled] = useState(false);
   const [monospaceEnabled, setMonospaceEnabled] = useState(false);
@@ -67,38 +62,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     };
     fetchNote();
   }, [noteId]);
-
-  useEffect(() => {
-    if (showRenameModal) {
-      setNewNoteId(noteId);
-      setIsUnique(false);
-      setIsChecking(false);
-      setRenameError("");
-    }
-  }, [showRenameModal, noteId]);
-
-  useEffect(() => {
-    if (newNoteId && newNoteId !== noteId) {
-      setIsChecking(true);
-      setRenameError("");
-      const trimmedNewId = newNoteId.trim().toLowerCase();
-      axios
-        .post("/api/notes/check-availability", { noteId: trimmedNewId })
-        .then((response) => {
-          setIsUnique(response.data.available);
-          setIsChecking(false);
-        })
-        .catch((error) => {
-          console.error("Error checking availability:", error);
-          setIsUnique(false);
-          setIsChecking(false);
-          setRenameError("Error checking availability. Please try again.");
-        });
-    } else {
-      setIsUnique(false);
-      setIsChecking(false);
-    }
-  }, [newNoteId, noteId]);
 
   useEffect(() => {
     if (saveTimeout.current) {
@@ -190,37 +153,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     setVerifyError("");
   };
 
-  const handleNewIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewNoteId(e.target.value);
-  };
-
-  const handleRename = () => {
-    const trimmedNewId = newNoteId.trim().toLowerCase();
-    if (isUnique && trimmedNewId !== noteId && !isChecking) {
-      axios
-        .post(`/api/notes/${noteId}/rename`, { newId: trimmedNewId })
-        .then(() => {
-          navigate(`/${trimmedNewId}`);
-          setShowRenameModal(false);
-        })
-        .catch((error) => console.error("Error renaming note:", error));
-    }
-  };
-
-  const handleCancelRename = () => {
-    setShowRenameModal(false);
-    setNewNoteId(noteId);
-    setRenameError("");
-  };
-
   const openSetPasswordModal = () => {
-    setShowRenameModal(false);
     setShowSetPasswordModal(true);
-  };
-
-  const openRenameModal = () => {
-    setShowSetPasswordModal(false);
-    setShowRenameModal(true);
   };
 
   const toggleSpellCheck = () => {
@@ -274,10 +208,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               <i className="fas fa-lock"></i>
               <span className="tooltiptext">Password Option</span>
             </div>
-            <div className="tooltip" onClick={openRenameModal}>
-              <i className="fas fa-edit"></i>
-              <span className="tooltiptext">Rename URL</span>
-            </div>
             <div
               className={`tooltip${spellCheckEnabled ? " active" : ""}`}
               onClick={toggleSpellCheck}>
@@ -296,11 +226,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               <i className="far fa-lightbulb"></i>
               <span className="tooltiptext">Light switch</span>
             </div>
-            <div className="tooltip">
-              <i className="fas fa-tools"></i>
-              <span className="tooltiptext">Tools</span>
-            </div>
-            <button className="remove-ads">Remove Ads</button>
           </div>
         </header>
         <main className="edit-area">
@@ -348,47 +273,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
                 <div className="password-modal-buttons">
                   <button onClick={handleVerifyPassword}>Verify</button>
                   <button onClick={handleCancelPassword}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
-          {showRenameModal && (
-            <div className="rename-modal">
-              <div className="rename-modal-content">
-                <h3>Change Note URL</h3>
-                <input
-                  type="text"
-                  value={newNoteId}
-                  onChange={handleNewIdChange}
-                  placeholder="Enter new note name"
-                />
-                {isChecking && <p>Checking availability...</p>}
-                {!isChecking && newNoteId === noteId && (
-                  <p>No change detected.</p>
-                )}
-                {!isChecking &&
-                  newNoteId !== noteId &&
-                  newNoteId &&
-                  !isUnique &&
-                  !renameError && <p>This name is already taken.</p>}
-                {!isChecking &&
-                  newNoteId !== noteId &&
-                  newNoteId &&
-                  isUnique && <p>This name is available.</p>}
-                {renameError && <p className="error-message">{renameError}</p>}
-                <div className="rename-modal-buttons">
-                  <button
-                    onClick={handleRename}
-                    disabled={
-                      !isUnique ||
-                      isChecking ||
-                      newNoteId.trim().toLowerCase() === noteId ||
-                      !newNoteId ||
-                      !!renameError
-                    }>
-                    Save
-                  </button>
-                  <button onClick={handleCancelRename}>Cancel</button>
                 </div>
               </div>
             </div>

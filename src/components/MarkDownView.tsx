@@ -67,17 +67,7 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
 
   return (
     <>
-      <div
-        style={{
-          padding: "20px",
-          backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          margin: "20px auto",
-          maxWidth: "800px",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}>
+      <div className="markdown-view-container">
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
       {showVerifyPasswordModal && (

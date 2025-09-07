@@ -149,9 +149,9 @@ body {
 }
 .icons i,
 .icons span {
-  color: #444444;
+  color: #444444b8;
   cursor: pointer;
-  font-size: 20px;
+  /* font-size: 20px; */
   opacity: 0.8;
   transition: all 0.4s ease;
 }
@@ -212,22 +212,6 @@ body {
   bottom: auto;
   top: -12px;
   border-color: transparent transparent #444444 transparent;
-}
-.remove-ads {
-  background: linear-gradient(135deg, #03dac6, #018786);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 700;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: 0 4px 15px rgba(3, 218, 198, 0.4);
-}
-.remove-ads:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(3, 218, 198, 0.6);
 }
 .edit-area {
   height: 400px;
@@ -656,8 +640,13 @@ body {
   line-height: 1.7;
   padding: 28px 36px;
   border-radius: 10px;
+  overflow-x: auto;
 }
 .code-view-line {
+  display: flex;
+  align-items: flex-start;
+  white-space: pre-wrap;
+  word-break: break-word;
   margin-bottom: 10px;
 }
 .line-number {
@@ -666,6 +655,7 @@ body {
   min-width: 40px;
   display: inline-block;
   text-align: right;
+  flex-shrink: 0;
 }
 .code-view-footer {
   margin-top: 28px;
@@ -674,6 +664,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 .code-view-footer .footer-left {
   display: flex;
@@ -694,6 +685,7 @@ body {
   color: #333333;
   transition: all 0.4s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 5px;
 }
 .select-all-button.selected {
   background: linear-gradient(135deg, #e0e0e0, #cccccc);
@@ -752,65 +744,139 @@ body {
 .app-container.dark .error-message {
   color: #ff7597;
 }
-.rename-modal-buttons {
-  display: flex;
-  gap: 20px;
-  width: 100%;
-  justify-content: space-between;
+.raw-view-container {
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 20px 10px;
+  box-sizing: border-box;
 }
-.rename-modal-buttons button {
-  flex: 1;
-  padding: 14px 24px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
+.raw-view-pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: sans-serif;
   font-size: 16px;
-  font-weight: 700;
-  transition: all 0.4s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.5;
+  color: #000;
+  margin: 0;
+  max-width: 100%;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  overflow-x: auto;
+  text-align: left;
 }
-.rename-modal-buttons button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+.markdown-view-container {
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: monospace;
+  font-size: 14px;
+  word-break: break-word;
 }
-.rename-modal-buttons button:first-child {
-  background: linear-gradient(135deg, #6200ee, #3700b3);
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
   color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1000;
 }
-.rename-modal-buttons button:first-child:hover {
-  background: linear-gradient(135deg, #3700b3, #6200ee);
-}
-.rename-modal-buttons button:first-child:disabled {
-  background: linear-gradient(135deg, #dddddd, #cccccc);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-.rename-modal-buttons button:last-child {
-  background: linear-gradient(135deg, #f0f0f0, #dddddd);
-  color: #333333;
-}
-.rename-modal-buttons button:last-child:hover {
-  background: linear-gradient(135deg, #dddddd, #cccccc);
-}
-.app-container.dark .rename-modal-buttons button:first-child {
-  background: linear-gradient(135deg, #bb86fc, #6200ee);
-  box-shadow: 0 4px 10px rgba(187, 134, 252, 0.4);
-}
-.app-container.dark .rename-modal-buttons button:first-child:hover {
-  background: linear-gradient(135deg, #6200ee, #bb86fc);
-  box-shadow: 0 6px 15px rgba(187, 134, 252, 0.5);
-}
-.app-container.dark .rename-modal-buttons button:first-child:disabled {
-  background: linear-gradient(135deg, #4a4a4a, #3a3a3a);
-  box-shadow: none;
-}
-.app-container.dark .rename-modal-buttons button:last-child {
-  background: linear-gradient(135deg, #4a4a4a, #3a3a3a);
-  color: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-.app-container.dark .rename-modal-buttons button:last-child:hover {
-  background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    margin: 15px;
+    padding: 0 10px;
+  }
+  .top-bar {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .icons {
+    gap: 15px;
+    padding-right: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .edit-area {
+    height: auto;
+    min-height: 300px;
+  }
+  .edit-area textarea {
+    padding: 0 15px 50px 15px;
+    font-size: 12px;
+  }
+  .edit-tools {
+    right: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .bottom-bar {
+    padding: 10px;
+  }
+  .footer-links {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+  }
+  .code-view-container {
+    padding: 15px;
+    width: 95%;
+    margin: 10px auto;
+  }
+  .code-view-pre {
+    padding: 15px;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+  .code-view-line {
+    display: flex;
+    align-items: flex-start;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 5px;
+  }
+  .line-number {
+    margin-right: 15px;
+    min-width: 30px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .code-view-header {
+    font-size: 12px;
+    margin-bottom: 15px;
+  }
+  .code-view-divider {
+    margin: 15px 0;
+  }
+  .code-view-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 12px;
+  }
+  .select-all-button {
+    font-size: 12px;
+    padding: 6px 15px 6px 12px;
+    margin: 5px 0;
+  }
+  .raw-view-pre {
+    padding: 10px;
+    font-size: 12px;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .markdown-view-container {
+    padding: 10px;
+    font-size: 12px;
+    max-width: 100%;
+  }
+  .password-modal-content {
+    width: 90%;
+    padding: 20px;
+  }
 }

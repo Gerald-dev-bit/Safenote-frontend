@@ -154,9 +154,7 @@ const CodeView: React.FC<CodeViewProps> = ({ noteId }) => {
 
   return (
     <>
-      <div
-        className="code-view-container"
-        style={{ fontFamily: "Roboto, sans-serif", fontSize: "16px" }}>
+      <div className="code-view-container">
         <div className="code-view-header">Written by Anonymous</div>
         <hr className="code-view-divider" />
         <pre className="code-view-pre" ref={preRef}>
@@ -202,21 +200,7 @@ const CodeView: React.FC<CodeViewProps> = ({ noteId }) => {
           </div>
         </div>
       )}
-      {notification && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "5px",
-            zIndex: 1000,
-          }}>
-          {notification}
-        </div>
-      )}
+      {notification && <div className="notification">{notification}</div>}
     </>
   );
 };

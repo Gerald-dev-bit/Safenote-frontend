@@ -1,5 +1,5 @@
 // src/components/RawView.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 axios.defaults.baseURL =
@@ -16,6 +16,7 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
   const [accessDenied, setAccessDenied] = useState(false);
   const [password, setPassword] = useState("");
   const [verifyError, setVerifyError] = useState("");
+  const preRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -66,16 +67,11 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
 
   return (
     <>
-      <pre
-        style={{
-          whiteSpace: "pre-wrap",
-          wordWrap: "break-word",
-          padding: "0 20px",
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}>
-        {content}
-      </pre>
+      <div className="raw-view-container">
+        <pre className="raw-view-pre" ref={preRef}>
+          {content}
+        </pre>
+      </div>
       {showVerifyPasswordModal && (
         <div className="password-modal">
           <div className="password-modal-content">
