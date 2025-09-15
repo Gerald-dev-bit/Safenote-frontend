@@ -85,12 +85,18 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           setRetryCount((prev) => prev + 1);
           setHumanToken("");
           setShowHumanVerification(true);
-          setSaveError("Verification failed, retrying...");
+          setSaveError(
+            "Verification failed, retrying... (Attempt " +
+              (retryCount + 1) +
+              "/3)"
+          );
         } else if (
           axios.isAxiosError(error) &&
           error.response?.status === 500
         ) {
           setSaveError("Server error - please try again later.");
+        } else {
+          setSaveError("Failed to load note. Please try again.");
         }
       }
     };
@@ -124,9 +130,11 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               "cf-turnstile-response": token,
             }
           : { content: content || "", "cf-turnstile-response": token };
-        await axios.post(`/api/notes/${noteId}`, saveData);
-        setSavedContent(content);
-        setSaveError("");
+        const response = await axios.post(`/api/notes/${noteId}`, saveData);
+        if (response.status === 200) {
+          setSavedContent(content);
+          setSaveError("");
+        }
       } catch (error) {
         console.error("Error saving note:", error);
         if (
@@ -135,7 +143,9 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           retryCount < 3
         ) {
           setRetryCount((prev) => prev + 1);
-          setSaveError("CAPTCHA failed, retrying...");
+          setSaveError(
+            "CAPTCHA failed, retrying... (Attempt " + (retryCount + 1) + "/3)"
+          );
         } else if (
           axios.isAxiosError(error) &&
           error.response?.status === 401
@@ -183,25 +193,32 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     if (password) {
       try {
         const token = await getTurnstileToken();
-        await axios.post(`/api/notes/${noteId}/set-password`, {
+        const response = await axios.post(`/api/notes/${noteId}/set-password`, {
           password,
           "cf-turnstile-response": token,
         });
-        setVerifiedPassword(password);
-        setIsPasswordSet(true);
-        setShowSetPasswordModal(false);
-        setPassword("");
-        setVerifyError("");
+        if (response.status === 200) {
+          setVerifiedPassword(password);
+          setIsPasswordSet(true);
+          setShowSetPasswordModal(false);
+          setPassword("");
+          setVerifyError("");
+        }
       } catch (error) {
         console.error("Error setting password:", error);
         if (axios.isAxiosError(error) && error.response?.status === 403) {
           setVerifyError("CAPTCHA validation failed. Try again.");
+        } else if (
+          axios.isAxiosError(error) &&
+          error.response?.status === 400
+        ) {
+          setVerifyError("Password already set for this note.");
         } else {
           setVerifyError("Failed to set password. Try again.");
         }
       }
     } else {
-      console.error("Missing password");
+      setVerifyError("Password cannot be empty.");
     }
   };
 
@@ -223,8 +240,12 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       console.error("Error verifying password:", error);
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         setVerifyError("CAPTCHA validation failed. Try again.");
+      } else if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setVerifyError("Wrong password. Try again.");
+      } else if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setVerifyError("No password set for this note.");
       } else {
-        setVerifyError("Wrong password. Try Again.");
+        setVerifyError("Failed to verify password. Try again.");
       }
     }
   };
@@ -349,6 +370,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
                   onExpire={() => {
                     console.warn("Turnstile token expired");
                     setVerifyError("Verification expired. Please try again.");
+                    setShowHumanVerification(true); // Reset to show again
                   }}
                 />
                 {verifyError && <p className="error-message">{verifyError}</p>}
@@ -479,6 +501,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         onExpire={() => {
           console.warn("Turnstile token expired");
           tokenRejectRef.current?.(new Error("Turnstile token expired"));
+          setTokenKey((prev) => prev + 1); // Force re-render for new token
         }}
         style={{ display: "none" }}
       />

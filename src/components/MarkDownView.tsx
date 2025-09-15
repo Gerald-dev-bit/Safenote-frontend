@@ -47,10 +47,14 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
           setRetryCount((prev) => prev + 1);
           setHumanToken("");
           setShowHumanVerification(true);
-          setError("Verification failed, retrying...");
+          setError(
+            `Verification failed, retrying... (Attempt ${retryCount + 1}/3)`
+          );
+        } else if (axios.isAxiosError(err) && err.response?.status === 500) {
+          setError("Server error - please try again later.");
         } else {
           console.error("Error fetching note:", err);
-          setError("Failed to load content.");
+          setError("Failed to load content. Please try again.");
         }
       }
     };
@@ -72,16 +76,24 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
         password,
         "cf-turnstile-response": token,
       });
-      setContent(response.data.content || "");
-      setShowVerifyPasswordModal(false);
-      setPassword("");
-      setVerifyError("");
+      if (response.status === 200) {
+        setContent(response.data.content || "");
+        setShowVerifyPasswordModal(false);
+        setPassword("");
+        setVerifyError("");
+      }
     } catch (error) {
       console.error("Error verifying password:", error);
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         setVerifyError("CAPTCHA validation failed. Try again.");
+      } else if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setVerifyError("Wrong password. Try again.");
+      } else if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setVerifyError("No password set for this note.");
+      } else if (axios.isAxiosError(error) && error.response?.status === 500) {
+        setVerifyError("Server error - please try again later.");
       } else {
-        setVerifyError("Wrong password. Try Again.");
+        setVerifyError("Failed to verify password. Try again.");
       }
     }
   };
@@ -125,6 +137,7 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
               onExpire={() => {
                 console.warn("Turnstile token expired");
                 setVerifyError("Verification expired. Please try again.");
+                setShowHumanVerification(true); // Reset to show again
               }}
             />
             {verifyError && <p className="error-message">{verifyError}</p>}
@@ -154,8 +167,15 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
         sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
         appearance="interaction-only"
         onVerify={(token) => tokenResolveRef.current?.(token)}
-        onError={(errorCode) => tokenRejectRef.current?.(errorCode)}
-        onExpire={() => tokenRejectRef.current?.("Token expired")}
+        onError={(errorCode) => {
+          console.error("Turnstile error:", errorCode);
+          tokenRejectRef.current?.(new Error(`Turnstile error: ${errorCode}`));
+        }}
+        onExpire={() => {
+          console.warn("Turnstile token expired");
+          tokenRejectRef.current?.(new Error("Turnstile token expired"));
+          setTokenKey((prev) => prev + 1); // Force re-render for new token
+        }}
         style={{ display: "none" }}
       />
     </>
