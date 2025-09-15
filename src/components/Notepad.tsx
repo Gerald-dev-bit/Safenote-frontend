@@ -77,6 +77,9 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         console.error("Error fetching note:", error);
         setContent("");
         setSavedContent("");
+        if (isAxiosError(error) && error.response?.status === 500) {
+          setSaveError("Server error - please try again later.");
+        }
       }
     };
     fetchNote();
@@ -124,6 +127,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           setVerifiedPassword(null);
         } else if (isAxiosError(error) && error.response?.status === 403) {
           setSaveError("CAPTCHA validation failed. Please try again.");
+        } else if (isAxiosError(error) && error.response?.status === 500) {
+          setSaveError("Server error - please try again later.");
         }
       }
     }, 500);
