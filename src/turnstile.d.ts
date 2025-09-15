@@ -1,3 +1,4 @@
+//turnstile.d.ts
 declare global {
   interface Window {
     turnstile: {

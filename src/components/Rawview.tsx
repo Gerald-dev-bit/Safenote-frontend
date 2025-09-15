@@ -1,3 +1,4 @@
+//src/components/Rawview.tsx
 import React, { useEffect, useState, useRef } from "react";
 import axios, { isAxiosError } from "axios";
 import Turnstile from "react-turnstile";
