@@ -105,11 +105,11 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
               sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
               appearance="always"
               size="normal"
-              onVerify={(token: string) => {
+              onVerify={(token) => {
                 setHumanToken(token);
                 setShowHumanVerification(false);
               }}
-              onError={(errorCode: string) => {
+              onError={(errorCode) => {
                 console.error("Turnstile error:", errorCode);
                 setVerifyError("Verification failed. Please try again.");
               }}
@@ -144,7 +144,6 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
         key={tokenKey}
         sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
         appearance="interaction-only"
-        size="invisible"
         onVerify={(token) => tokenResolveRef.current?.(token)}
         onError={(errorCode) => tokenRejectRef.current?.(errorCode)}
         onExpire={() => tokenRejectRef.current?.("Token expired")}

@@ -103,11 +103,11 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
               sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
               appearance="always"
               size="normal"
-              onVerify={(token: string) => {
+              onVerify={(token) => {
                 setHumanToken(token);
                 setShowHumanVerification(false);
               }}
-              onError={(errorCode: string) => {
+              onError={(errorCode) => {
                 console.error("Turnstile error:", errorCode);
                 setVerifyError("Verification failed. Please try again.");
               }}
@@ -142,7 +142,6 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
         key={tokenKey}
         sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
         appearance="interaction-only"
-        size="invisible"
         onVerify={(token) => tokenResolveRef.current?.(token)}
         onError={(errorCode) => tokenRejectRef.current?.(errorCode)}
         onExpire={() => tokenRejectRef.current?.("Token expired")}

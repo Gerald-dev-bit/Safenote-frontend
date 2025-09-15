@@ -445,7 +445,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         key={tokenKey}
         sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
         appearance="interaction-only"
-        size="invisible"
         onVerify={(token: string) => tokenResolveRef.current?.(token)}
         onError={(errorCode: string) => {
           console.error("Turnstile error:", errorCode);
