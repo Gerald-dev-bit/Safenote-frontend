@@ -1,13 +1,10 @@
-//src/components/MarkDownView.tsx
 import React, { useEffect, useState, useRef } from "react";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import Turnstile from "react-turnstile";
 
-const isDev = import.meta.env.MODE === "development";
-axios.defaults.baseURL = isDev
-  ? "http://localhost:5000"
-  : import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+axios.defaults.baseURL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 interface MarkdownViewProps {
   noteId: string;
@@ -23,31 +20,44 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
   const [password, setPassword] = useState("");
   const [verifyError, setVerifyError] = useState("");
   const [tokenKey, setTokenKey] = useState(0);
-  const tokenResolveRef = useRef<(token: string) => void | null>(null);
-  const tokenRejectRef = useRef<(reason?: any) => void | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const tokenResolveRef = useRef<((token: string) => void) | null>(null);
+  const tokenRejectRef = useRef<((reason?: any) => void) | null>(null);
 
   useEffect(() => {
     if (showHumanVerification) return;
 
     const fetchNote = async () => {
       try {
-        const response = await axios.get(
-          `/api/notes/${noteId}?cf-turnstile-response=${humanToken}`
-        );
+        const response = await axios.get(`/api/notes/${noteId}`, {
+          params: { "cf-turnstile-response": humanToken },
+        });
         if (response.data.requiresPassword) {
           setShowVerifyPasswordModal(true);
         } else {
           setContent(response.data.content || "");
         }
+        setRetryCount(0);
       } catch (err) {
-        console.error("Error fetching note:", err);
-        setError("Failed to load content.");
+        if (
+          axios.isAxiosError(err) &&
+          err.response?.status === 403 &&
+          retryCount < 3
+        ) {
+          setRetryCount((prev) => prev + 1);
+          setHumanToken("");
+          setShowHumanVerification(true);
+          setError("Verification failed, retrying...");
+        } else {
+          console.error("Error fetching note:", err);
+          setError("Failed to load content.");
+        }
       }
     };
     fetchNote();
-  }, [noteId, showHumanVerification, humanToken]);
+  }, [noteId, showHumanVerification, humanToken, retryCount]);
 
-  const getTurnstileToken = async () => {
+  const getTurnstileToken = () => {
     setTokenKey((prev) => prev + 1);
     return new Promise<string>((resolve, reject) => {
       tokenResolveRef.current = resolve;
@@ -66,9 +76,9 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
       setShowVerifyPasswordModal(false);
       setPassword("");
       setVerifyError("");
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error verifying password:", error);
-      if (isAxiosError(error) && error.response?.status === 403) {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
         setVerifyError("CAPTCHA validation failed. Try again.");
       } else {
         setVerifyError("Wrong password. Try Again.");
