@@ -16,6 +16,8 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
+  const [showHumanVerification, setShowHumanVerification] = useState(true);
+  const [humanToken, setHumanToken] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
   const [password, setPassword] = useState("");
   const [verifyError, setVerifyError] = useState("");
@@ -24,9 +26,13 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
   const tokenRejectRef = useRef<(reason?: any) => void | null>(null);
 
   useEffect(() => {
+    if (showHumanVerification) return;
+
     const fetchNote = async () => {
       try {
-        const response = await axios.get(`/api/notes/${noteId}`);
+        const response = await axios.get(
+          `/api/notes/${noteId}?cf-turnstile-response=${humanToken}`
+        );
         if (response.data.requiresPassword) {
           setShowVerifyPasswordModal(true);
         } else {
@@ -38,7 +44,7 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
       }
     };
     fetchNote();
-  }, [noteId]);
+  }, [noteId, showHumanVerification, humanToken]);
 
   const getTurnstileToken = async () => {
     setTokenKey((prev) => prev + 1);
@@ -89,6 +95,31 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
       <div className="markdown-view-container">
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
+      {showHumanVerification && (
+        <div className="password-modal">
+          <div className="password-modal-content">
+            <h3>Verify you're a Human</h3>
+            <Turnstile
+              sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
+              appearance="always"
+              size="normal"
+              onVerify={(token: string) => {
+                setHumanToken(token);
+                setShowHumanVerification(false);
+              }}
+              onError={(errorCode: string) => {
+                console.error("Turnstile error:", errorCode);
+                setVerifyError("Verification failed. Please try again.");
+              }}
+              onExpire={() => {
+                console.warn("Turnstile token expired");
+                setVerifyError("Verification expired. Please try again.");
+              }}
+            />
+            {verifyError && <p className="error-message">{verifyError}</p>}
+          </div>
+        </div>
+      )}
       {showVerifyPasswordModal && (
         <div className="password-modal">
           <div className="password-modal-content">

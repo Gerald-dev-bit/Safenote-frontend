@@ -30,6 +30,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [charCount, setCharCount] = useState(0);
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
+  const [showHumanVerification, setShowHumanVerification] = useState(true);
+  const [humanToken, setHumanToken] = useState("");
   const [password, setPassword] = useState("");
   const [verifiedPassword, setVerifiedPassword] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState("");
@@ -54,9 +56,13 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   }, [noteId, navigate]);
 
   useEffect(() => {
+    if (showHumanVerification) return;
+
     const fetchNote = async () => {
       try {
-        const response = await axios.get(`/api/notes/${noteId}`);
+        const response = await axios.get(
+          `/api/notes/${noteId}?cf-turnstile-response=${humanToken}`
+        );
         const requiresPassword = response.data.requiresPassword;
         setIsPasswordSet(requiresPassword);
         if (requiresPassword) {
@@ -74,7 +80,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       }
     };
     fetchNote();
-  }, [noteId]);
+  }, [noteId, showHumanVerification, humanToken]);
 
   const getTurnstileToken = (): Promise<string> => {
     setTokenKey((prev) => prev + 1);
@@ -298,6 +304,31 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               fontWeight: 300,
             }}
           />
+          {showHumanVerification && (
+            <div className="password-modal">
+              <div className="password-modal-content">
+                <h3>Verify you're a Human</h3>
+                <Turnstile
+                  sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
+                  appearance="always"
+                  size="normal"
+                  onVerify={(token: string) => {
+                    setHumanToken(token);
+                    setShowHumanVerification(false);
+                  }}
+                  onError={(errorCode: string) => {
+                    console.error("Turnstile error:", errorCode);
+                    setVerifyError("Verification failed. Please try again.");
+                  }}
+                  onExpire={() => {
+                    console.warn("Turnstile token expired");
+                    setVerifyError("Verification expired. Please try again.");
+                  }}
+                />
+                {verifyError && <p className="error-message">{verifyError}</p>}
+              </div>
+            </div>
+          )}
           {showSetPasswordModal && (
             <div className="password-modal">
               <div className="password-modal-content">
