@@ -1,9 +1,12 @@
-// src/App.tsx
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Notepad from "./components/Notepad";
 import RawView from "./components/Rawview";
 import MarkdownView from "./components/MarkDownView";
 import CodeView from "./components/CodeView";
+import Privacy from "./Privacy";
+import Terms from "./Terms";
+import Contact from "./Contact";
+import About from "./About";
 import { useEffect } from "react";
 
 function generateRandomId(length = 8) {
@@ -55,6 +58,10 @@ function App() {
       <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
       <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
       <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/about" element={<About />} />
       <Route path="/" element={<Home />} />
     </Routes>
   );

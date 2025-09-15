@@ -1,9 +1,11 @@
-// src/components/RawView.tsx
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
+import Turnstile from "react-turnstile";
 
-axios.defaults.baseURL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const isDev = import.meta.env.MODE === "development";
+axios.defaults.baseURL = isDev
+  ? "http://localhost:5000"
+  : import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 interface RawViewProps {
   noteId: string;
@@ -17,6 +19,9 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
   const [password, setPassword] = useState("");
   const [verifyError, setVerifyError] = useState("");
   const preRef = useRef<HTMLPreElement>(null);
+  const [tokenKey, setTokenKey] = useState(0);
+  const tokenResolveRef = useRef<(token: string) => void | null>(null);
+  const tokenRejectRef = useRef<(reason?: any) => void | null>(null);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -35,18 +40,32 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
     fetchNote();
   }, [noteId]);
 
+  const getTurnstileToken = async () => {
+    setTokenKey((prev) => prev + 1);
+    return new Promise<string>((resolve, reject) => {
+      tokenResolveRef.current = resolve;
+      tokenRejectRef.current = reject;
+    });
+  };
+
   const handleVerifyPassword = async () => {
     try {
+      const token = await getTurnstileToken();
       const response = await axios.post(`/api/notes/${noteId}/verify`, {
         password,
+        "cf-turnstile-response": token,
       });
       setContent(response.data.content || "");
       setShowVerifyPasswordModal(false);
       setPassword("");
       setVerifyError("");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error verifying password:", error);
-      setVerifyError("Wrong password. Try Again.");
+      if (isAxiosError(error) && error.response?.status === 403) {
+        setVerifyError("CAPTCHA validation failed. Try again.");
+      } else {
+        setVerifyError("Wrong password. Try Again.");
+      }
     }
   };
 
@@ -90,6 +109,16 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
           </div>
         </div>
       )}
+      <Turnstile
+        key={tokenKey}
+        sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
+        appearance="interaction-only"
+        size="invisible"
+        onVerify={(token) => tokenResolveRef.current?.(token)}
+        onError={(errorCode) => tokenRejectRef.current?.(errorCode)}
+        onExpire={() => tokenRejectRef.current?.("Token expired")}
+        style={{ display: "none" }}
+      />
     </>
   );
 };
