@@ -8,6 +8,7 @@ const isDev = import.meta.env.MODE === "development";
 axios.defaults.baseURL = isDev
   ? "http://localhost:5000"
   : import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+axios.defaults.withCredentials = true; // Enable credentials for CORS
 
 interface NotepadProps {
   noteId: string;
@@ -102,7 +103,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               "cf-turnstile-response": token,
             }
           : { content: content || "", "cf-turnstile-response": token };
-        await axios.post(`/api/notes/${noteId}`, saveData);
+        const response = await axios.post(`/api/notes/${noteId}`, saveData); // Add response logging
+        console.log("Save response:", response.data);
         setSavedContent(content);
         setSaveError("");
       } catch (error: unknown) {
@@ -147,10 +149,11 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     if (password) {
       try {
         const token = await getTurnstileToken();
-        await axios.post(`/api/notes/${noteId}/set-password`, {
+        const response = await axios.post(`/api/notes/${noteId}/set-password`, {
           password,
           "cf-turnstile-response": token,
         });
+        console.log("Set password response:", response.data);
         setVerifiedPassword(password);
         setIsPasswordSet(true);
         setShowSetPasswordModal(false);
@@ -176,6 +179,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         password,
         "cf-turnstile-response": token,
       });
+      console.log("Verify password response:", response.data);
       setContent(response.data.content || "");
       setSavedContent(response.data.content || "");
       updateCounts(response.data.content || "");
@@ -412,8 +416,14 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         appearance="interaction-only"
         size="invisible"
         onVerify={(token: string) => tokenResolveRef.current?.(token)}
-        onError={(errorCode: string) => tokenRejectRef.current?.(errorCode)}
-        onExpire={() => tokenRejectRef.current?.("Token expired")}
+        onError={(errorCode: string) => {
+          console.error("Turnstile error:", errorCode);
+          tokenRejectRef.current?.(new Error(`Turnstile error: ${errorCode}`));
+        }}
+        onExpire={() => {
+          console.warn("Turnstile token expired");
+          tokenRejectRef.current?.(new Error("Turnstile token expired"));
+        }}
         style={{ display: "none" }}
       />
     </>
