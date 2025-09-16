@@ -350,135 +350,112 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             }}
           />
           {showSetPasswordModal && (
-            <div className="password-modal">
-              <div className="password-modal-content">
-                <h3>Set Password</h3>
+            <div
+              className="password-modal"
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgba(0, 0, 0, 0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}>
+              <div
+                className="password-modal-content"
+                style={{
+                  background: "#ffffff",
+                  padding: "24px",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  maxWidth: "400px",
+                  width: "100%",
+                  fontFamily: '"Poppins", sans-serif',
+                }}>
+                <h3
+                  style={{
+                    margin: "0 0 16px 0",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "#333333",
+                  }}>
+                  Set Password
+                </h3>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    fontSize: "14px",
+                    border: "1px solid #cccccc",
+                    marginBottom: "12px",
+                    fontFamily: '"Poppins", sans-serif',
+                  }}
                 />
-                {verifyError && <p className="error-message">{verifyError}</p>}
-                <div className="password-modal-buttons">
-                  <button onClick={handleSetPassword}>Save</button>
-                  <button onClick={handleCancelPassword}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
-          {showVerifyPasswordModal && (
-            <div className="password-modal">
-              <div className="password-modal-content">
-                <h3>Enter Password</h3>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password to access note"
-                />
-                {verifyError && <p className="error-message">{verifyError}</p>}
-                <div className="password-modal-buttons">
-                  <button onClick={handleVerifyPassword}>Verify</button>
-                  <button onClick={handleCancelPassword}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
-          {showShareModal && (
-            <div className="password-modal">
-              <div className="password-modal-content">
-                <h3>Share Note</h3>
-                <p>Select a format to share:</p>
+                {verifyError && (
+                  <p
+                    className="error-message"
+                    style={{
+                      color: "#d32f2f",
+                      fontSize: "14px",
+                      margin: "0 0 12px 0",
+                    }}>
+                    {verifyError}
+                  </p>
+                )}
                 <div
                   className="password-modal-buttons"
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "10px",
-                    width: "100%",
+                    display: "flex",
+                    gap: "12px",
+                    justifyContent: "flex-end",
                   }}>
                   <button
                     style={{
-                      padding: "10px 16px",
+                      padding: "8px 16px",
                       fontSize: "14px",
-                      background: "#d3d3d3",
+                      background: "#e0e0e0",
                       color: "#333333",
                       border: "none",
                       borderRadius: "0",
                       cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
                     }}
-                    onClick={() => handleCopyShareLink("raw")}
+                    onClick={handleSetPassword}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#bbbbbb")
+                      (e.currentTarget.style.background = "#c0c0c0")
                     }
                     onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#d3d3d3")
+                      (e.currentTarget.style.background = "#e0e0e0")
                     }>
-                    Raw
+                    Save
                   </button>
                   <button
                     style={{
-                      padding: "10px 16px",
+                      padding: "8px 16px",
                       fontSize: "14px",
-                      background: "#d3d3d3",
+                      background: "#e0e0e0",
                       color: "#333333",
                       border: "none",
                       borderRadius: "0",
                       cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
                     }}
-                    onClick={() => handleCopyShareLink("markdown")}
+                    onClick={handleCancelPassword}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#bbbbbb")
+                      (e.currentTarget.style.background = "#c0c0c0")
                     }
                     onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#d3d3d3")
-                    }>
-                    Markdown
-                  </button>
-                  <button
-                    style={{
-                      padding: "10px 16px",
-                      fontSize: "14px",
-                      background: "#d3d3d3",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                    }}
-                    onClick={() => handleCopyShareLink("code")}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#bbbbbb")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#d3d3d3")
-                    }>
-                    Code
-                  </button>
-                  <button
-                    style={{
-                      padding: "10px 16px",
-                      fontSize: "14px",
-                      background: "#d3d3d3",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                    }}
-                    onClick={handleCancelShare}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#bbbbbb")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#d3d3d3")
+                      (e.currentTarget.style.background = "#e0e0e0")
                     }>
                     Cancel
                   </button>
@@ -486,7 +463,273 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               </div>
             </div>
           )}
-          {saveError && <p className="error-message">{saveError}</p>}
+          {showVerifyPasswordModal && (
+            <div
+              className="password-modal"
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgba(0, 0, 0, 0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}>
+              <div
+                className="password-modal-content"
+                style={{
+                  background: "#ffffff",
+                  padding: "24px",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  maxWidth: "400px",
+                  width: "100%",
+                  fontFamily: '"Poppins", sans-serif',
+                }}>
+                <h3
+                  style={{
+                    margin: "0 0 16px 0",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "#333333",
+                  }}>
+                  Enter Password
+                </h3>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password to access note"
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    fontSize: "14px",
+                    border: "1px solid #cccccc",
+                    marginBottom: "12px",
+                    fontFamily: '"Poppins", sans-serif',
+                  }}
+                />
+                {verifyError && (
+                  <p
+                    className="error-message"
+                    style={{
+                      color: "#d32f2f",
+                      fontSize: "14px",
+                      margin: "0 0 12px 0",
+                    }}>
+                    {verifyError}
+                  </p>
+                )}
+                <div
+                  className="password-modal-buttons"
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    justifyContent: "flex-end",
+                  }}>
+                  <button
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      background: "#e0e0e0",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
+                    }}
+                    onClick={handleVerifyPassword}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#c0c0c0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#e0e0e0")
+                    }>
+                    Verify
+                  </button>
+                  <button
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      background: "#e0e0e0",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
+                    }}
+                    onClick={handleCancelPassword}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#c0c0c0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#e0e0e0")
+                    }>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {showShareModal && (
+            <div
+              className="password-modal"
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgba(0, 0, 0, 0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}>
+              <div
+                className="password-modal-content"
+                style={{
+                  background: "#ffffff",
+                  padding: "24px",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                  maxWidth: "400px",
+                  width: "100%",
+                  fontFamily: '"Poppins", sans-serif',
+                }}>
+                <h3
+                  style={{
+                    margin: "0 0 16px 0",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "#333333",
+                  }}>
+                  Share Note
+                </h3>
+                <p
+                  style={{
+                    margin: "0 0 16px 0",
+                    fontSize: "14px",
+                    color: "#555555",
+                  }}>
+                  Select a format to share:
+                </p>
+                <div
+                  className="password-modal-buttons"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: "12px",
+                    width: "100%",
+                  }}>
+                  <button
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      background: "#e0e0e0",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
+                    }}
+                    onClick={() => handleCopyShareLink("raw")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#c0c0c0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#e0e0e0")
+                    }>
+                    Raw
+                  </button>
+                  <button
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      background: "#e0e0e0",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
+                    }}
+                    onClick={() => handleCopyShareLink("markdown")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#c0c0c0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#e0e0e0")
+                    }>
+                    Markdown
+                  </button>
+                  <button
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      background: "#e0e0e0",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
+                    }}
+                    onClick={() => handleCopyShareLink("code")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#c0c0c0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#e0e0e0")
+                    }>
+                    Code
+                  </button>
+                  <button
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      background: "#e0e0e0",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "background 0.3s ease",
+                      fontFamily: '"Poppins", sans-serif',
+                      fontWeight: 500,
+                    }}
+                    onClick={handleCancelShare}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#c0c0c0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#e0e0e0")
+                    }>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {saveError && (
+            <p
+              className="error-message"
+              style={{
+                color: "#d32f2f",
+                fontSize: "14px",
+                margin: "12px 0",
+              }}>
+              {saveError}
+            </p>
+          )}
           <div className="edit-tools">
             <div
               className={`tooltip tooltip-bottom${
