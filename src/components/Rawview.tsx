@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import Turnstile from "react-turnstile";
 
 axios.defaults.baseURL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
@@ -13,44 +12,22 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
-  const [showHumanVerification, setShowHumanVerification] = useState(true);
-  const [humanToken, setHumanToken] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
   const [password, setPassword] = useState("");
   const [verifyError, setVerifyError] = useState("");
   const preRef = useRef<HTMLPreElement>(null);
-  const [tokenKey, setTokenKey] = useState(0);
-  const [retryCount, setRetryCount] = useState(0);
-  const tokenResolveRef = useRef<((token: string) => void) | null>(null);
-  const tokenRejectRef = useRef<((reason?: any) => void) | null>(null);
 
   useEffect(() => {
-    if (showHumanVerification) return;
-
     const fetchNote = async () => {
       try {
-        const response = await axios.get(`/api/notes/${noteId}`, {
-          params: { "cf-turnstile-response": humanToken },
-        });
+        const response = await axios.get(`/api/notes/${noteId}`);
         if (response.data.requiresPassword) {
           setShowVerifyPasswordModal(true);
         } else {
           setContent(response.data.content || "");
         }
-        setRetryCount(0);
       } catch (err) {
-        if (
-          axios.isAxiosError(err) &&
-          err.response?.status === 403 &&
-          retryCount < 3
-        ) {
-          setRetryCount((prev) => prev + 1);
-          setHumanToken("");
-          setShowHumanVerification(true);
-          setError(
-            `Verification failed, retrying... (Attempt ${retryCount + 1}/3)`
-          );
-        } else if (axios.isAxiosError(err) && err.response?.status === 500) {
+        if (axios.isAxiosError(err) && err.response?.status === 500) {
           setError("Server error - please try again later.");
         } else {
           console.error("Error fetching note:", err);
@@ -59,22 +36,12 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
       }
     };
     fetchNote();
-  }, [noteId, showHumanVerification, humanToken, retryCount]);
-
-  const getTurnstileToken = () => {
-    setTokenKey((prev) => prev + 1);
-    return new Promise<string>((resolve, reject) => {
-      tokenResolveRef.current = resolve;
-      tokenRejectRef.current = reject;
-    });
-  };
+  }, [noteId]);
 
   const handleVerifyPassword = async () => {
     try {
-      const token = await getTurnstileToken();
       const response = await axios.post(`/api/notes/${noteId}/verify`, {
         password,
-        "cf-turnstile-response": token,
       });
       if (response.status === 200) {
         setContent(response.data.content || "");
@@ -84,9 +51,7 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
       }
     } catch (error) {
       console.error("Error verifying password:", error);
-      if (axios.isAxiosError(error) && error.response?.status === 403) {
-        setVerifyError("CAPTCHA validation failed. Try again.");
-      } else if (axios.isAxiosError(error) && error.response?.status === 401) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         setVerifyError("Wrong password. Try again.");
       } else if (axios.isAxiosError(error) && error.response?.status === 400) {
         setVerifyError("No password set for this note.");
@@ -120,32 +85,6 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
           {content}
         </pre>
       </div>
-      {showHumanVerification && (
-        <div className="password-modal">
-          <div className="password-modal-content">
-            <h3>Verify you're a Human</h3>
-            <Turnstile
-              sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
-              appearance="always"
-              size="normal"
-              onVerify={(token) => {
-                setHumanToken(token);
-                setShowHumanVerification(false);
-              }}
-              onError={(errorCode) => {
-                console.error("Turnstile error:", errorCode);
-                setVerifyError("Verification failed. Please try again.");
-              }}
-              onExpire={() => {
-                console.warn("Turnstile token expired");
-                setVerifyError("Verification expired. Please try again.");
-                setShowHumanVerification(true); // Reset to show again
-              }}
-            />
-            {verifyError && <p className="error-message">{verifyError}</p>}
-          </div>
-        </div>
-      )}
       {showVerifyPasswordModal && (
         <div className="password-modal">
           <div className="password-modal-content">
@@ -164,22 +103,6 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
           </div>
         </div>
       )}
-      <Turnstile
-        key={tokenKey}
-        sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
-        appearance="interaction-only"
-        onVerify={(token) => tokenResolveRef.current?.(token)}
-        onError={(errorCode) => {
-          console.error("Turnstile error:", errorCode);
-          tokenRejectRef.current?.(new Error(`Turnstile error: ${errorCode}`));
-        }}
-        onExpire={() => {
-          console.warn("Turnstile token expired");
-          tokenRejectRef.current?.(new Error("Turnstile token expired"));
-          setTokenKey((prev) => prev + 1); // Force re-render for new token
-        }}
-        style={{ display: "none" }}
-      />
     </>
   );
 };

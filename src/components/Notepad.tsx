@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import Turnstile from "react-turnstile";
 
 axios.defaults.baseURL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
@@ -28,8 +27,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [charCount, setCharCount] = useState(0);
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
-  const [showHumanVerification, setShowHumanVerification] = useState(true);
-  const [humanToken, setHumanToken] = useState("");
   const [password, setPassword] = useState("");
   const [verifiedPassword, setVerifiedPassword] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState("");
@@ -43,10 +40,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [notification, setNotification] = useState("");
   const navigate = useNavigate();
   const saveTimeout = useRef<number | null>(null);
-  const [tokenKey, setTokenKey] = useState(0);
-  const [retryCount, setRetryCount] = useState(0);
-  const tokenResolveRef = useRef<((token: string) => void) | null>(null);
-  const tokenRejectRef = useRef<((reason?: any) => void) | null>(null);
 
   useEffect(() => {
     if (noteId !== noteId.toLowerCase()) {
@@ -55,13 +48,9 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   }, [noteId, navigate]);
 
   useEffect(() => {
-    if (showHumanVerification) return;
-
     const fetchNote = async () => {
       try {
-        const response = await axios.get(`/api/notes/${noteId}`, {
-          params: { "cf-turnstile-response": humanToken },
-        });
+        const response = await axios.get(`/api/notes/${noteId}`);
         const requiresPassword = response.data.requiresPassword;
         setIsPasswordSet(requiresPassword);
         if (requiresPassword) {
@@ -72,28 +61,11 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           updateCounts(response.data.content || "");
           setVerifiedPassword(null);
         }
-        setRetryCount(0);
       } catch (error) {
         console.error("Error fetching note:", error);
         setContent("");
         setSavedContent("");
-        if (
-          axios.isAxiosError(error) &&
-          error.response?.status === 403 &&
-          retryCount < 3
-        ) {
-          setRetryCount((prev) => prev + 1);
-          setHumanToken("");
-          setShowHumanVerification(true);
-          setSaveError(
-            "Verification failed, retrying... (Attempt " +
-              (retryCount + 1) +
-              "/3)"
-          );
-        } else if (
-          axios.isAxiosError(error) &&
-          error.response?.status === 500
-        ) {
+        if (axios.isAxiosError(error) && error.response?.status === 500) {
           setSaveError("Server error - please try again later.");
         } else {
           setSaveError("Failed to load note. Please try again.");
@@ -101,15 +73,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       }
     };
     fetchNote();
-  }, [noteId, showHumanVerification, humanToken, retryCount]);
-
-  const getTurnstileToken = () => {
-    setTokenKey((prev) => prev + 1);
-    return new Promise<string>((resolve, reject) => {
-      tokenResolveRef.current = resolve;
-      tokenRejectRef.current = reject;
-    });
-  };
+  }, [noteId]);
 
   useEffect(() => {
     if (saveTimeout.current) {
@@ -122,14 +86,12 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
 
     saveTimeout.current = window.setTimeout(async () => {
       try {
-        const token = await getTurnstileToken();
         const saveData = verifiedPassword
           ? {
               content: content || "",
               password: verifiedPassword,
-              "cf-turnstile-response": token,
             }
-          : { content: content || "", "cf-turnstile-response": token };
+          : { content: content || "" };
         const response = await axios.post(`/api/notes/${noteId}`, saveData);
         if (response.status === 200) {
           setSavedContent(content);
@@ -137,19 +99,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         }
       } catch (error) {
         console.error("Error saving note:", error);
-        if (
-          axios.isAxiosError(error) &&
-          error.response?.status === 403 &&
-          retryCount < 3
-        ) {
-          setRetryCount((prev) => prev + 1);
-          setSaveError(
-            "CAPTCHA failed, retrying... (Attempt " + (retryCount + 1) + "/3)"
-          );
-        } else if (
-          axios.isAxiosError(error) &&
-          error.response?.status === 401
-        ) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
           setVerifyError(
             "Password required or incorrect. Please verify again."
           );
@@ -171,7 +121,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         clearTimeout(saveTimeout.current);
       }
     };
-  }, [content, noteId, verifiedPassword, savedContent, retryCount]);
+  }, [content, noteId, verifiedPassword, savedContent]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
@@ -192,10 +142,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const handleSetPassword = async () => {
     if (password) {
       try {
-        const token = await getTurnstileToken();
         const response = await axios.post(`/api/notes/${noteId}/set-password`, {
           password,
-          "cf-turnstile-response": token,
         });
         if (response.status === 200) {
           setVerifiedPassword(password);
@@ -206,12 +154,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         }
       } catch (error) {
         console.error("Error setting password:", error);
-        if (axios.isAxiosError(error) && error.response?.status === 403) {
-          setVerifyError("CAPTCHA validation failed. Try again.");
-        } else if (
-          axios.isAxiosError(error) &&
-          error.response?.status === 400
-        ) {
+        if (axios.isAxiosError(error) && error.response?.status === 400) {
           setVerifyError("Password already set for this note.");
         } else {
           setVerifyError("Failed to set password. Try again.");
@@ -224,10 +167,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
 
   const handleVerifyPassword = async () => {
     try {
-      const token = await getTurnstileToken();
       const response = await axios.post(`/api/notes/${noteId}/verify`, {
         password,
-        "cf-turnstile-response": token,
       });
       setContent(response.data.content || "");
       setSavedContent(response.data.content || "");
@@ -238,9 +179,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       setVerifyError("");
     } catch (error) {
       console.error("Error verifying password:", error);
-      if (axios.isAxiosError(error) && error.response?.status === 403) {
-        setVerifyError("CAPTCHA validation failed. Try again.");
-      } else if (axios.isAxiosError(error) && error.response?.status === 401) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         setVerifyError("Wrong password. Try again.");
       } else if (axios.isAxiosError(error) && error.response?.status === 400) {
         setVerifyError("No password set for this note.");
@@ -302,21 +241,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     window.open(`/Code/${noteId}`, "_blank");
   };
 
-  const handleEditableLink = () => {
-    const currentUrl = window.location.href;
-    navigator.clipboard
-      .writeText(currentUrl)
-      .then(() => {
-        setNotification("Editable link copied to clipboard!");
-        setTimeout(() => setNotification(""), 2000);
-      })
-      .catch((err) => {
-        console.error("Failed to copy link: ", err);
-        setNotification("Failed to copy editable link");
-        setTimeout(() => setNotification(""), 2000);
-      });
-  };
-
   return (
     <>
       <div
@@ -366,32 +290,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               fontWeight: 300,
             }}
           />
-          {showHumanVerification && (
-            <div className="password-modal">
-              <div className="password-modal-content">
-                <h3>Verify you're a Human</h3>
-                <Turnstile
-                  sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
-                  appearance="always"
-                  size="normal"
-                  onVerify={(token: string) => {
-                    setHumanToken(token);
-                    setShowHumanVerification(false);
-                  }}
-                  onError={(errorCode: string) => {
-                    console.error("Turnstile error:", errorCode);
-                    setVerifyError("Verification failed. Please try again.");
-                  }}
-                  onExpire={() => {
-                    console.warn("Turnstile token expired");
-                    setVerifyError("Verification expired. Please try again.");
-                    setShowHumanVerification(true); // Reset to show again
-                  }}
-                />
-                {verifyError && <p className="error-message">{verifyError}</p>}
-              </div>
-            </div>
-          )}
           {showSetPasswordModal && (
             <div className="password-modal">
               <div className="password-modal-content">
@@ -474,7 +372,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         <footer className="bottom-bar">
           <div className="center-content">
             <div className="links">
-              <button className="link-button" onClick={handleEditableLink}>
+              <button className="link-button">
                 <i className="fas fa-link"></i> Editable Link
               </button>
               <button className="link-button">
@@ -504,22 +402,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         </Link>
       </div>
       {notification && <div className="slide-notification">{notification}</div>}
-      <Turnstile
-        key={tokenKey}
-        sitekey={import.meta.env.VITE_CF_TURNSTILE_SITEKEY}
-        appearance="interaction-only"
-        onVerify={(token: string) => tokenResolveRef.current?.(token)}
-        onError={(errorCode: string) => {
-          console.error("Turnstile error:", errorCode);
-          tokenRejectRef.current?.(new Error(`Turnstile error: ${errorCode}`));
-        }}
-        onExpire={() => {
-          console.warn("Turnstile token expired");
-          tokenRejectRef.current?.(new Error("Turnstile token expired"));
-          setTokenKey((prev) => prev + 1); // Force re-render for new token
-        }}
-        style={{ display: "none" }}
-      />
     </>
   );
 };
