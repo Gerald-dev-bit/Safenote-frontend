@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
 axios.defaults.baseURL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
@@ -39,6 +38,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [saveError, setSaveError] = useState("");
   const [isPasswordSet, setIsPasswordSet] = useState(false);
   const [notification, setNotification] = useState("");
+  const [showSetPassword, setShowSetPassword] = useState(false);
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const navigate = useNavigate();
   const saveTimeout = useRef<number | null>(null);
 
@@ -300,6 +301,14 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     setShowShareModal(false);
   };
 
+  const togglePasswordVisibility = (type: "set" | "verify") => {
+    if (type === "set") {
+      setShowSetPassword(!showSetPassword);
+    } else {
+      setShowVerifyPassword(!showVerifyPassword);
+    }
+  };
+
   return (
     <>
       <div
@@ -349,427 +358,98 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               fontWeight: 300,
             }}
           />
+          {saveError && <p className="error-message">{saveError}</p>}
           {showSetPasswordModal && (
-            <div
-              className="password-modal"
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0, 0, 0, 0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 1000,
-              }}>
-              <div
-                className="password-modal-content"
-                style={{
-                  background: "#ffffff",
-                  padding: "24px",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  maxWidth: "400px",
-                  width: "100%",
-                  fontFamily: '"Poppins", sans-serif',
-                }}>
-                <h3
-                  style={{
-                    margin: "0 0 16px 0",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "#333333",
-                  }}>
-                  Set Password
-                </h3>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    fontSize: "14px",
-                    border: "1px solid #cccccc",
-                    marginBottom: "12px",
-                    fontFamily: '"Poppins", sans-serif',
-                  }}
-                />
-                {verifyError && (
-                  <p
-                    className="error-message"
-                    style={{
-                      color: "#d32f2f",
-                      fontSize: "14px",
-                      margin: "0 0 12px 0",
-                    }}>
-                    {verifyError}
-                  </p>
-                )}
-                <div
-                  className="password-modal-buttons"
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    justifyContent: "flex-end",
-                  }}>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={handleSetPassword}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Save
-                  </button>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={handleCancelPassword}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Cancel
-                  </button>
+            <div className="password-modal">
+              <div className="password-modal-content">
+                <h3>Set Password</h3>
+                <p>Choose a strong password to secure your note.</p>
+                <div className="password-input-wrapper">
+                  <input
+                    type={showSetPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                  />
+                  <i
+                    className={`fas fa-eye${
+                      !showSetPassword ? "-slash" : ""
+                    } toggle-password`}
+                    onClick={() => togglePasswordVisibility("set")}></i>
+                </div>
+                {verifyError && <p className="error-message">{verifyError}</p>}
+                <div className="password-modal-buttons">
+                  <button onClick={handleSetPassword}>Save</button>
+                  <button onClick={handleCancelPassword}>Cancel</button>
                 </div>
               </div>
             </div>
           )}
           {showVerifyPasswordModal && (
-            <div
-              className="password-modal"
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0, 0, 0, 0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 1000,
-              }}>
-              <div
-                className="password-modal-content"
-                style={{
-                  background: "#ffffff",
-                  padding: "24px",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  maxWidth: "400px",
-                  width: "100%",
-                  fontFamily: '"Poppins", sans-serif',
-                }}>
-                <h3
-                  style={{
-                    margin: "0 0 16px 0",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "#333333",
-                  }}>
-                  Enter Password
-                </h3>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password to access note"
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    fontSize: "14px",
-                    border: "1px solid #cccccc",
-                    marginBottom: "12px",
-                    fontFamily: '"Poppins", sans-serif',
-                  }}
-                />
-                {verifyError && (
-                  <p
-                    className="error-message"
-                    style={{
-                      color: "#d32f2f",
-                      fontSize: "14px",
-                      margin: "0 0 12px 0",
-                    }}>
-                    {verifyError}
-                  </p>
-                )}
-                <div
-                  className="password-modal-buttons"
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    justifyContent: "flex-end",
-                  }}>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={handleVerifyPassword}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Verify
-                  </button>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={handleCancelPassword}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Cancel
-                  </button>
+            <div className="password-modal">
+              <div className="password-modal-content">
+                <h3>Enter Password</h3>
+                <p>Enter the password to access this secure note.</p>
+                <div className="password-input-wrapper">
+                  <input
+                    type={showVerifyPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                  />
+                  <i
+                    className={`fas fa-eye${
+                      !showVerifyPassword ? "-slash" : ""
+                    } toggle-password`}
+                    onClick={() => togglePasswordVisibility("verify")}></i>
+                </div>
+                {verifyError && <p className="error-message">{verifyError}</p>}
+                <div className="password-modal-buttons">
+                  <button onClick={handleVerifyPassword}>Verify</button>
+                  <button onClick={handleCancelPassword}>Cancel</button>
                 </div>
               </div>
             </div>
           )}
           {showShareModal && (
-            <div
-              className="password-modal"
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0, 0, 0, 0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 1000,
-              }}>
-              <div
-                className="password-modal-content"
-                style={{
-                  background: "#ffffff",
-                  padding: "24px",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  maxWidth: "400px",
-                  width: "100%",
-                  fontFamily: '"Poppins", sans-serif',
-                }}>
-                <h3
-                  style={{
-                    margin: "0 0 16px 0",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "#333333",
-                  }}>
-                  Share Note
-                </h3>
-                <p
-                  style={{
-                    margin: "0 0 16px 0",
-                    fontSize: "14px",
-                    color: "#555555",
-                  }}>
-                  Select a format to share:
-                </p>
-                <div
-                  className="password-modal-buttons"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "12px",
-                    width: "100%",
-                  }}>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={() => handleCopyShareLink("raw")}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Raw
+            <div className="password-modal">
+              <div className="password-modal-content">
+                <h3>Share Note</h3>
+                <p>Select a view to share this note.</p>
+                <div className="password-modal-buttons">
+                  <button onClick={() => handleCopyShareLink("raw")}>
+                    Raw View
                   </button>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={() => handleCopyShareLink("markdown")}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Markdown
+                  <button onClick={() => handleCopyShareLink("markdown")}>
+                    Markdown View
                   </button>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={() => handleCopyShareLink("code")}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Code
-                  </button>
-                  <button
-                    style={{
-                      padding: "8px 16px",
-                      fontSize: "14px",
-                      background: "#e0e0e0",
-                      color: "#333333",
-                      border: "none",
-                      borderRadius: "0",
-                      cursor: "pointer",
-                      transition: "background 0.3s ease",
-                      fontFamily: '"Poppins", sans-serif',
-                      fontWeight: 500,
-                    }}
-                    onClick={handleCancelShare}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.background = "#c0c0c0")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.background = "#e0e0e0")
-                    }>
-                    Cancel
+                  <button onClick={() => handleCopyShareLink("code")}>
+                    Code View
                   </button>
                 </div>
+                <button onClick={handleCancelShare}>Cancel</button>
               </div>
             </div>
           )}
-          {saveError && (
-            <p
-              className="error-message"
-              style={{
-                color: "#d32f2f",
-                fontSize: "14px",
-                margin: "12px 0",
-              }}>
-              {saveError}
-            </p>
-          )}
           <div className="edit-tools">
-            <div
-              className={`tooltip tooltip-bottom${
-                isIpadSize ? " active" : ""
-              }`}>
-              <button className="tool-button" onClick={toggleIpadSize}>
-                <i className="fas fa-arrows-alt-v"></i>
-              </button>
-              <span className="tooltiptext">Resize window</span>
-            </div>
-            <div className="tooltip tooltip-bottom">
-              <button className="tool-button" onClick={increaseFontSize}>
-                <i className="fas fa-plus"></i>
-              </button>
-              <span className="tooltiptext">Increase font-size</span>
-            </div>
-            <div className="tooltip tooltip-bottom">
-              <button className="tool-button" onClick={decreaseFontSize}>
-                <i className="fas fa-minus"></i>
-              </button>
-              <span className="tooltiptext">Decrease font-size</span>
-            </div>
-            <div className="tooltip tooltip-bottom">
-              <button className="tool-button" onClick={viewRaw}>
-                Raw
-              </button>
-              <span className="tooltiptext">View in plain-text</span>
-            </div>
-            <div className="tooltip tooltip-bottom">
-              <button className="tool-button" onClick={viewMarkdown}>
-                Markdown
-              </button>
-              <span className="tooltiptext">View in markdown</span>
-            </div>
-            <div className="tooltip tooltip-bottom">
-              <button className="tool-button" onClick={viewCode}>
-                Code
-              </button>
-              <span className="tooltiptext">View in line numbers</span>
-            </div>
+            <button className="tool-button" onClick={toggleIpadSize}>
+              <i className="fas fa-tablet-alt"></i>
+            </button>
+            <button className="tool-button" onClick={increaseFontSize}>
+              <i className="fas fa-plus"></i>
+            </button>
+            <button className="tool-button" onClick={decreaseFontSize}>
+              <i className="fas fa-minus"></i>
+            </button>
+            <button className="tool-button" onClick={viewRaw}>
+              <i className="fas fa-file"></i>
+            </button>
+            <button className="tool-button" onClick={viewMarkdown}>
+              <i className="fab fa-markdown"></i>
+            </button>
+            <button className="tool-button" onClick={viewCode}>
+              <i className="fas fa-code"></i>
+            </button>
           </div>
         </main>
         <footer className="bottom-bar">
@@ -779,30 +459,15 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
                 <i className="fas fa-link"></i> Editable Link
               </button>
               <button className="link-button" onClick={handleShareLink}>
-                <i className="fas fa-share-alt"></i> Share Link
+                <i className="fas fa-share"></i> Share
               </button>
             </div>
             <div className="counts">
-              <span>
-                Words: {wordCount} | Chars: {charCount}
-              </span>
+              <span>Words: {wordCount}</span>
+              <span>Chars: {charCount}</span>
             </div>
           </div>
         </footer>
-      </div>
-      <div className="footer-links">
-        <Link to="/privacy" target="_blank" rel="noopener noreferrer">
-          Privacy
-        </Link>
-        <Link to="/terms" target="_blank" rel="noopener noreferrer">
-          Terms
-        </Link>
-        <Link to="/contact" target="_blank" rel="noopener noreferrer">
-          Contact
-        </Link>
-        <Link to="/about" target="_blank" rel="noopener noreferrer">
-          About Us
-        </Link>
       </div>
       {notification && <div className="slide-notification">{notification}</div>}
     </>
