@@ -146,51 +146,36 @@ const CodeView: React.FC<CodeViewProps> = ({ noteId }) => {
       if (!inPara) {
         paraNum++;
         inPara = true;
-        return (
-          <div key={index} className="code-view-line">
-            <span className="line-number">{paraNum}.</span>
-            {line}
-          </div>
-        );
-      } else {
-        return (
-          <div key={index} className="code-view-line">
-            <span className="line-number"></span>
-            {line}
-          </div>
-        );
       }
+      return (
+        <div key={index} className="code-view-line">
+          <span className="line-number">{paraNum}</span>
+          {line}
+        </div>
+      );
     }
   });
 
   return (
     <>
       <div className="code-view-container">
-        <div className="code-view-header">Written by Anonymous</div>
+        <div className="code-view-header">Code View</div>
         <hr className="code-view-divider" />
         <pre className="code-view-pre" ref={preRef}>
           {renderedLines}
         </pre>
-        <hr className="code-view-divider bottom-divider" />
         <div className="code-view-footer">
-          <span className="footer-left">
-            <span>
-              <i className="fas fa-cloud"></i> SafeNote
-            </span>{" "}
-            - <span>cheat sheet</span>
-          </span>
-          <button
-            className={`select-all-button ${isSelected ? "selected" : ""}`}
-            onClick={toggleSelectAll}>
-            <span className="checkbox-circle">{isSelected ? "✔" : ""}</span>
-            {isSelected ? "Deselect All" : "Select All"}
-          </button>
-          <button
-            className="select-all-button"
-            onClick={handleCopy}
-            style={{ marginLeft: "10px" }}>
-            Copy Selected
-          </button>
+          <div className="footer-left">
+            <button
+              className={`select-all-button ${isSelected ? "selected" : ""}`}
+              onClick={toggleSelectAll}>
+              <span className="checkbox-circle"></span>
+              Select all
+            </button>
+            <button className="select-all-button" onClick={handleCopy}>
+              <i className="fas fa-copy"></i>Copy
+            </button>
+          </div>
         </div>
       </div>
       {showVerifyPasswordModal && (
