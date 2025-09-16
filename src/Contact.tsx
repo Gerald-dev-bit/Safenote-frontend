@@ -54,7 +54,7 @@ const Contact = () => {
       <h2
         style={{
           color: "#333",
-          fontSize: "28px",
+          fontSize: "29px",
           marginBottom: "10px",
           fontFamily: "'Tilt Neon', sans-serif",
           textAlign: "center",
@@ -66,7 +66,7 @@ const Contact = () => {
       </h2>
       <p
         style={{
-          color: "#333131ff",
+          color: "#535151ff",
           fontSize: "16px",
           marginBottom: "30px",
           fontFamily: "'Poppins', sans-serif",

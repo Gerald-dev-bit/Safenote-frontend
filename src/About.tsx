@@ -15,10 +15,10 @@ const About = () => {
         style={{
           padding: "20px 40px 60px",
           fontFamily: "monospace",
-          fontSize: "15px",
-          color: "#333131ff",
+          fontSize: "14px",
+          color: "#535151ff",
           textAlign: "justify",
-          maxWidth: "1200px",
+          maxWidth: "1000px",
           margin: "0 auto",
           fontWeight: 600,
         }}>

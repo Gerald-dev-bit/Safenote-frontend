@@ -15,10 +15,10 @@ const Terms = () => {
         style={{
           padding: "20px 40px",
           fontFamily: "monospace",
-          fontSize: "15px",
-          color: "#333131ff",
+          fontSize: "14px",
+          color: "#535151ff",
           textAlign: "justify",
-          maxWidth: "800px",
+          maxWidth: "1000px",
           margin: "0 auto",
           fontWeight: 600,
         }}>
