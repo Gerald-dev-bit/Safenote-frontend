@@ -1,4 +1,3 @@
-//src/App.tsx
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Notepad from "./components/Notepad";
 import RawView from "./components/Rawview";

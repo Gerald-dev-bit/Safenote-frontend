@@ -20,9 +20,12 @@ const Terms = () => {
           textAlign: "justify",
           maxWidth: "1000px",
           margin: "0 auto",
-          fontWeight: 600,
+          fontWeight: 400,
         }}>
-        <h2 style={{ textAlign: "center" }}>Terms of Service</h2>
+        <h2
+          style={{ textAlign: "center", fontSize: "18px", fontWeight: "800" }}>
+          Terms of Service
+        </h2>
         <p>
           Welcome to SafeNote.xyz, your secure haven for note-taking. We
           appreciate your interest in our platform and are pleased to offer

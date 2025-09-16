@@ -20,9 +20,12 @@ const About = () => {
           textAlign: "justify",
           maxWidth: "1000px",
           margin: "0 auto",
-          fontWeight: 600,
+          fontWeight: 400,
         }}>
-        <h2 style={{ textAlign: "center" }}>About Us</h2>
+        <h2
+          style={{ textAlign: "center", fontSize: "18px", fontWeight: "800" }}>
+          About Us
+        </h2>
         <p>
           Welcome to SafeNote.xyz, your ultimate destination for secure and
           effortless note-taking. Founded with a passion for privacy and

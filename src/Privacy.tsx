@@ -20,9 +20,12 @@ const Privacy = () => {
           textAlign: "justify",
           maxWidth: "1000px",
           margin: "0 auto",
-          fontWeight: 600,
+          fontWeight: 400,
         }}>
-        <h2 style={{ textAlign: "center" }}>Privacy Policy</h2>
+        <h2
+          style={{ textAlign: "center", fontSize: "18px", fontWeight: "800" }}>
+          Privacy Policy
+        </h2>
         <p>
           This Privacy Policy governs the manner in which Safenote collects,
           uses, maintains and discloses information collected from users (each,
