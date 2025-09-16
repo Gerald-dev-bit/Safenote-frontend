@@ -390,17 +390,98 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               <div className="password-modal-content">
                 <h3>Share Note</h3>
                 <p>Select a format to share:</p>
-                <div className="password-modal-buttons">
-                  <button onClick={() => handleCopyShareLink("raw")}>
+                <div
+                  className="password-modal-buttons"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: "10px",
+                    width: "100%",
+                  }}>
+                  <button
+                    style={{
+                      padding: "10px 16px",
+                      fontSize: "14px",
+                      background: "#d3d3d3",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={() => handleCopyShareLink("raw")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#bbbbbb")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#d3d3d3")
+                    }>
                     Raw
                   </button>
-                  <button onClick={() => handleCopyShareLink("markdown")}>
+                  <button
+                    style={{
+                      padding: "10px 16px",
+                      fontSize: "14px",
+                      background: "#d3d3d3",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={() => handleCopyShareLink("markdown")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#bbbbbb")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#d3d3d3")
+                    }>
                     Markdown
                   </button>
-                  <button onClick={() => handleCopyShareLink("code")}>
+                  <button
+                    style={{
+                      padding: "10px 16px",
+                      fontSize: "14px",
+                      background: "#d3d3d3",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={() => handleCopyShareLink("code")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#bbbbbb")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#d3d3d3")
+                    }>
                     Code
                   </button>
-                  <button onClick={handleCancelShare}>Cancel</button>
+                  <button
+                    style={{
+                      padding: "10px 16px",
+                      fontSize: "14px",
+                      background: "#d3d3d3",
+                      color: "#333333",
+                      border: "none",
+                      borderRadius: "0",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={handleCancelShare}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#bbbbbb")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#d3d3d3")
+                    }>
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
