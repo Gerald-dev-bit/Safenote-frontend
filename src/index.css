@@ -594,11 +594,12 @@ body {
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
-  background: #9d6f4e;
+  background: rgb(204, 196, 196);
   color: white;
 }
 .share-modal-buttons button:hover {
-  background: rgb(204, 196, 196);
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+  color: #1e1e1e;
   transform: translateY(-1px);
 }
 .share-modal-content > button:last-child {
