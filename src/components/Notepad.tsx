@@ -57,8 +57,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         setIsPasswordSet(requiresPassword);
         if (requiresPassword) {
           setShowVerifyPasswordModal(true);
-          document.getElementById("password-verify-modal").style.display =
-            "block";
+          const verifyModal = document.getElementById("password-verify-modal");
+          if (verifyModal) verifyModal.style.display = "block";
         } else {
           setContent(response.data.content || "");
           setSavedContent(response.data.content || "");
@@ -108,8 +108,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             "Password required or incorrect. Please verify again."
           );
           setShowVerifyPasswordModal(true);
-          document.getElementById("password-verify-modal").style.display =
-            "block";
+          const verifyModal = document.getElementById("password-verify-modal");
+          if (verifyModal) verifyModal.style.display = "block";
           setVerifiedPassword(null);
         } else if (
           axios.isAxiosError(error) &&
@@ -155,7 +155,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           setVerifiedPassword(password);
           setIsPasswordSet(true);
           setShowSetPasswordModal(false);
-          document.getElementById("password-set-modal").style.display = "none";
+          const setModal = document.getElementById("password-set-modal");
+          if (setModal) setModal.style.display = "none";
           setPassword("");
           setVerifyError("");
         }
@@ -182,7 +183,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       updateCounts(response.data.content || "");
       setVerifiedPassword(password);
       setShowVerifyPasswordModal(false);
-      document.getElementById("password-verify-modal").style.display = "none";
+      const verifyModal = document.getElementById("password-verify-modal");
+      if (verifyModal) verifyModal.style.display = "none";
       setPassword("");
       setVerifyError("");
     } catch (error) {
@@ -200,8 +202,10 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const handleCancelPassword = () => {
     setShowSetPasswordModal(false);
     setShowVerifyPasswordModal(false);
-    document.getElementById("password-set-modal").style.display = "none";
-    document.getElementById("password-verify-modal").style.display = "none";
+    const setModal = document.getElementById("password-set-modal");
+    if (setModal) setModal.style.display = "none";
+    const verifyModal = document.getElementById("password-verify-modal");
+    if (verifyModal) verifyModal.style.display = "none";
     setPassword("");
     setVerifyError("");
   };
@@ -212,7 +216,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       setTimeout(() => setNotification(""), 2000);
     } else {
       setShowSetPasswordModal(true);
-      document.getElementById("password-set-modal").style.display = "block";
+      const setModal = document.getElementById("password-set-modal");
+      if (setModal) setModal.style.display = "block";
     }
   };
 
@@ -269,7 +274,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
 
   const handleShareLink = () => {
     setShowShareModal(true);
-    document.getElementById("share-modal").style.display = "block";
+    const shareModal = document.getElementById("share-modal");
+    if (shareModal) shareModal.style.display = "block";
   };
 
   const handleCopyShareLink = (format: string) => {
@@ -297,21 +303,24 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           } view link copied to clipboard!`
         );
         setShowShareModal(false);
-        document.getElementById("share-modal").style.display = "none";
+        const shareModal = document.getElementById("share-modal");
+        if (shareModal) shareModal.style.display = "none";
         setTimeout(() => setNotification(""), 2000);
       })
       .catch((err) => {
         console.error(`Failed to copy ${format} link: `, err);
         setNotification("Failed to copy link.");
         setShowShareModal(false);
-        document.getElementById("share-modal").style.display = "none";
+        const shareModal = document.getElementById("share-modal");
+        if (shareModal) shareModal.style.display = "none";
         setTimeout(() => setNotification(""), 2000);
       });
   };
 
   const handleCancelShare = () => {
     setShowShareModal(false);
-    document.getElementById("share-modal").style.display = "none";
+    const shareModal = document.getElementById("share-modal");
+    if (shareModal) shareModal.style.display = "none";
   };
 
   const togglePasswordVisibility = (type: "set" | "verify") => {
