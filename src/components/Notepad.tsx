@@ -360,7 +360,13 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           />
           {saveError && <p className="error-message">{saveError}</p>}
           {showSetPasswordModal && (
-            <div className="password-modal">
+            <div id="password-set-modal" className="password-modal">
+              <span
+                className="close"
+                onClick={handleCancelPassword}
+                title="Close Modal">
+                &times;
+              </span>
               <div className="password-modal-content">
                 <h3>Set Password</h3>
                 <p>Choose a strong password to secure your note.</p>
@@ -386,7 +392,13 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             </div>
           )}
           {showVerifyPasswordModal && (
-            <div className="password-modal">
+            <div id="password-verify-modal" className="password-modal">
+              <span
+                className="close"
+                onClick={handleCancelPassword}
+                title="Close Modal">
+                &times;
+              </span>
               <div className="password-modal-content">
                 <h3>Enter Password</h3>
                 <p>Enter the password to access this secure note.</p>
@@ -412,11 +424,17 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             </div>
           )}
           {showShareModal && (
-            <div className="password-modal">
-              <div className="password-modal-content">
+            <div id="share-modal" className="share-modal">
+              <span
+                className="close"
+                onClick={handleCancelShare}
+                title="Close Modal">
+                &times;
+              </span>
+              <div className="share-modal-content">
                 <h3>Share Note</h3>
                 <p>Select a view to share this note.</p>
-                <div className="password-modal-buttons">
+                <div className="share-modal-buttons">
                   <button onClick={() => handleCopyShareLink("raw")}>
                     Raw View
                   </button>
