@@ -241,6 +241,21 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     window.open(`/Code/${noteId}`, "_blank");
   };
 
+  const handleShareLink = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard
+      .writeText(currentUrl)
+      .then(() => {
+        setNotification("Link copied to clipboard!");
+        setTimeout(() => setNotification(""), 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy link: ", err);
+        setNotification("Failed to copy link");
+        setTimeout(() => setNotification(""), 2000);
+      });
+  };
+
   return (
     <>
       <div
@@ -375,7 +390,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               <button className="link-button">
                 <i className="fas fa-link"></i> Editable Link
               </button>
-              <button className="link-button">
+              <button className="link-button" onClick={handleShareLink}>
                 <i className="fas fa-share-alt"></i> Share Link
               </button>
             </div>
