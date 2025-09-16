@@ -1,4 +1,3 @@
-/* index.css: */
 /*
   Josh's Custom CSS Reset
   https://www.joshwcomeau.com/css/custom-css-reset/
@@ -145,17 +144,12 @@ body {
   color: #bbbbbb;
 }
 .app-container.dark .tool-button {
-  background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+  background: #d3d3d3;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   opacity: 0.5;
-}
-.app-container.dark .tool-button:hover {
-  background: linear-gradient(135deg, #3a3a3a, #4a4a4a);
-  opacity: 1;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  transition: opacity 0.3s ease;
 }
 .app-container.dark .tool-button i {
   color: #ffffff;
@@ -321,7 +315,7 @@ body {
   align-items: center;
 }
 .tool-button {
-  background: linear-gradient(135deg, #f6f6f6, #e0e0e0);
+  background: #d3d3d3;
   border: none;
   border-radius: 8px;
   padding: 4px 8px;
@@ -330,18 +324,28 @@ body {
   color: #444444;
   opacity: 0.5;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: all 0.4s ease;
+  transition: opacity 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-.tool-button:hover {
-  opacity: 1;
-  transform: scale(1.1);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(135deg, #e0e0e0, #cccccc);
 }
 .tool-button i {
   font-size: 11px;
   color: #444444;
+}
+.tool-button.view-raw,
+.tool-button.view-markdown,
+.tool-button.view-code {
+  padding: 2px 6px;
+  font-size: 9px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tool-button.view-raw i,
+.tool-button.view-markdown i,
+.tool-button.view-code i {
+  font-size: 9px;
 }
 .bottom-bar {
   display: flex;
@@ -381,7 +385,6 @@ body {
   transition: all 0.4s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   opacity: 0.5;
-  font-weight: 600;
 }
 .link-button:hover {
   background: linear-gradient(135deg, #e0e0e0, #cccccc);
@@ -426,72 +429,65 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeInModal 0.4s ease-in-out;
-  backdrop-filter: blur(5px);
+  animation: fadeInModal 0.3s ease-in-out;
+  backdrop-filter: blur(8px);
 }
 .password-modal.show {
   display: flex;
 }
 .password-modal-content {
-  background: #ffffff;
-  padding: 36px;
-  border-radius: 20px;
+  background: #fffbfbd1;
+  padding: 24px;
+  border-radius: 7px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   align-items: center;
   width: 400px;
-  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.2);
-  animation: scaleIn 0.4s ease-out;
-  position: relative;
+  max-width: 100%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.3s ease-out;
   font-family: "Poppins", sans-serif;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 .password-modal-content h3 {
   margin: 0;
-  font-size: 24px;
-  color: #333333;
-  font-weight: 700;
+  font-size: 22px;
+  color: #1e1e1e;
+  font-weight: 600;
 }
 .password-modal-content p {
   margin: 0;
-  font-size: 15px;
-  color: #666666;
+  font-size: 14px;
+  color: #555555;
   text-align: center;
 }
 .password-modal-content .password-input-wrapper {
   position: relative;
-  width: 100%;
+  width: 90%;
 }
-.password-modal-content input[type="password"] {
-  width: 100%;
-  padding: 14px 40px 14px 14px;
-  font-size: 17px;
-  border: 1px solid #dddddd;
-  border-radius: 10px;
-  transition: all 0.4s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-}
+.password-modal-content input[type="password"],
 .password-modal-content input[type="text"] {
   width: 100%;
-  padding: 14px 40px 14px 14px;
-  font-size: 17px;
-  border: 1px solid #dddddd;
-  border-radius: 10px;
-  transition: all 0.4s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 12px 40px 12px 12px;
+  font-size: 15px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 .password-modal-content input:hover {
-  border-color: #6200ee;
-  box-shadow: inset 0 2px 4px rgba(98, 0, 238, 0.1);
+  border-color: #3b82f6;
+  box-shadow: inset 0 1px 3px rgba(59, 130, 246, 0.1);
 }
 .password-modal-content input:focus {
-  border-color: #6200ee;
-  box-shadow: 0 0 0 4px rgba(98, 0, 238, 0.15);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   outline: none;
 }
 .password-modal-content .toggle-password {
@@ -500,47 +496,178 @@ body {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #666666;
-  font-size: 16px;
-  transition: color 0.4s ease;
+  color: #555555;
+  font-size: 15px;
+  transition: color 0.3s ease;
 }
 .password-modal-content .toggle-password:hover {
-  color: #6200ee;
+  color: #3b82f6;
 }
 .password-modal-buttons {
   display: flex;
-  gap: 20px;
-  width: 100%;
-  justify-content: space-between;
+  gap: 12px;
+  width: 50%;
+  justify-content: center;
 }
 .password-modal-buttons button {
-  flex: 1;
-  padding: 14px 24px;
+  padding: 8px 8px;
   cursor: pointer;
   border: none;
   border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  transition: all 0.4s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-.password-modal-buttons button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 .password-modal-buttons button:first-child {
-  background: linear-gradient(135deg, #6200ee, #3700b3);
+  flex: 1;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
 }
 .password-modal-buttons button:first-child:hover {
-  background: linear-gradient(135deg, #3700b3, #6200ee);
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-1px);
 }
 .password-modal-buttons button:last-child {
-  background: linear-gradient(135deg, #f0f0f0, #dddddd);
-  color: #333333;
+  flex: 1;
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+  color: #1e1e1e;
 }
 .password-modal-buttons button:last-child:hover {
-  background: linear-gradient(135deg, #dddddd, #cccccc);
+  background: linear-gradient(135deg, #d1d5db, #b0b6bc);
+  transform: translateY(-1px);
+}
+.share-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeInModal 0.3s ease-in-out;
+  backdrop-filter: blur(8px);
+}
+.share-modal-content {
+  background: linear-gradient(135deg, #ffffff, #f0f4f8);
+  padding: 22px 30px;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 400px;
+  max-width: 100%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.3s ease-out;
+  font-family: "Poppins", sans-serif;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.share-modal-content h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #1e1e1e;
+  font-weight: 600;
+}
+.share-modal-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #555555;
+  text-align: center;
+}
+.share-modal-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+.share-modal-buttons button {
+  flex: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+  border: none;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+  background: #9d6f4e;
+  color: white;
+}
+.share-modal-buttons button:hover {
+  background: rgb(204, 196, 196);
+  transform: translateY(-1px);
+}
+.share-modal-content > button:last-child {
+  width: 50%;
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+  color: #1e1e1e;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.share-modal-content > button:last-child:hover {
+  background: linear-gradient(135deg, #d1d5db, #b0b6bc);
+  transform: translateY(-1px);
+}
+.app-container.dark .password-modal-content,
+.app-container.dark .share-modal-content {
+  background: linear-gradient(135deg, #1f2937, #374151);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.app-container.dark .password-modal-content h3,
+.app-container.dark .share-modal-content h3 {
+  color: #e5e7eb;
+}
+.app-container.dark .password-modal-content p,
+.app-container.dark .share-modal-content p {
+  color: #9ca3af;
+}
+.app-container.dark .password-modal-content input {
+  background: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.app-container.dark .password-modal-content input:hover {
+  border-color: #60a5fa;
+  box-shadow: inset 0 1px 3px rgba(96, 165, 250, 0.1);
+}
+.app-container.dark .password-modal-content input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+.app-container.dark .password-modal-content .toggle-password {
+  color: #9ca3af;
+}
+.app-container.dark .password-modal-content .toggle-password:hover {
+  color: #60a5fa;
+}
+.app-container.dark .password-modal-buttons button:first-child,
+.app-container.dark .share-modal-buttons button {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+.app-container.dark .password-modal-buttons button:first-child:hover,
+.app-container.dark .share-modal-buttons button:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+.app-container.dark .password-modal-buttons button:last-child,
+.app-container.dark .share-modal-content > button:last-child {
+  background: linear-gradient(135deg, #4b5563, #6b7280);
+  color: #e5e7eb;
+}
+.app-container.dark .password-modal-buttons button:last-child:hover,
+.app-container.dark .share-modal-content > button:last-child:hover {
+  background: linear-gradient(135deg, #6b7280, #9ca3af);
 }
 .rename-modal {
   position: fixed;
@@ -553,43 +680,25 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeInModal 0.4s ease-in-out;
+  animation: fadeInModal 0.3s ease-in-out;
   backdrop-filter: blur(5px);
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 .rename-modal-content {
-  background: #ffffff;
+  background: #e0e0e0;
   padding: 36px;
-  border-radius: 20px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   gap: 24px;
   align-items: center;
-  width: 400px;
+  width: 500px;
+  height: 300px;
   box-shadow: 0 12px 50px rgba(0, 0, 0, 0.2);
-  animation: scaleIn 0.4s ease-out;
+  animation: scaleIn 0.3s ease-out;
   position: relative;
-}
-.rename-modal-content .close-button {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: transparent;
-  border: 1px solid #dddddd;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #888888;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.4s ease;
-}
-.rename-modal-content .close-button:hover {
-  background-color: #ff1744;
-  color: white;
-  border-color: #ff1744;
+  font-family: "Poppins", sans-serif;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 .rename-modal-content h3 {
   margin: 0;
@@ -603,7 +712,7 @@ body {
   font-size: 17px;
   border: 1px solid #dddddd;
   border-radius: 10px;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .rename-modal-content input:hover {
@@ -631,13 +740,8 @@ body {
   font-weight: 700;
   background: linear-gradient(135deg, #6200ee, #3700b3);
   color: white;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(98, 0, 238, 0.2);
-}
-.rename-modal-content button:hover {
-  background: linear-gradient(135deg, #3700b3, #6200ee);
-  transform: translateY(-4px);
-  box-shadow: 0 6px 15px rgba(98, 0, 238, 0.3);
 }
 .rename-modal-content button:disabled {
   background: linear-gradient(135deg, #dddddd, #cccccc);
@@ -645,81 +749,36 @@ body {
   transform: none;
   box-shadow: none;
 }
-.app-container.dark .password-modal-content,
 .app-container.dark .rename-modal-content {
-  background: #1e1e1e;
+  background: #2a2a2a;
   box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7);
 }
-.app-container.dark .password-modal-content h3,
 .app-container.dark .rename-modal-content h3 {
   color: #ffffff;
 }
-.app-container.dark .password-modal-content p,
 .app-container.dark .rename-modal-content p {
   color: #cccccc;
 }
-.app-container.dark .password-modal-content input,
 .app-container.dark .rename-modal-content input {
   background: #2a2a2a;
   color: #ffffff;
   border: 1px solid #4a4a4a;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
-.app-container.dark .password-modal-content input:hover,
 .app-container.dark .rename-modal-content input:hover {
   border-color: #bb86fc;
 }
-.app-container.dark .password-modal-content input:focus,
 .app-container.dark .rename-modal-content input:focus {
   border-color: #bb86fc;
   box-shadow: 0 0 0 4px rgba(187, 134, 252, 0.2);
-}
-.app-container.dark .password-modal-content .toggle-password {
-  color: #cccccc;
-}
-.app-container.dark .password-modal-content .toggle-password:hover {
-  color: #bb86fc;
-}
-.app-container.dark .password-modal-buttons button:first-child {
-  background: linear-gradient(135deg, #bb86fc, #6200ee);
-  box-shadow: 0 4px 10px rgba(187, 134, 252, 0.4);
-}
-.app-container.dark .password-modal-buttons button:first-child:hover {
-  background: linear-gradient(135deg, #6200ee, #bb86fc);
-  box-shadow: 0 6px 15px rgba(187, 134, 252, 0.5);
-}
-.app-container.dark .password-modal-buttons button:last-child {
-  background: linear-gradient(135deg, #4a4a4a, #3a3a3a);
-  color: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-.app-container.dark .password-modal-buttons button:last-child:hover {
-  background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 .app-container.dark .rename-modal-content button {
   background: linear-gradient(135deg, #bb86fc, #6200ee);
   box-shadow: 0 4px 10px rgba(187, 134, 252, 0.4);
 }
-.app-container.dark .rename-modal-content button:hover {
-  background: linear-gradient(135deg, #6200ee, #bb86fc);
-  box-shadow: 0 6px 15px rgba(187, 134, 252, 0.5);
-}
 .app-container.dark .rename-modal-content button:disabled {
   background: linear-gradient(135deg, #4a4a4a, #3a3a3a);
   box-shadow: none;
-}
-.app-container.dark .rename-modal-content .close-button {
-  color: #e0e0e0;
-  border-color: #4a4a4a;
-}
-.app-container.dark .rename-modal-content .close-button:hover {
-  background-color: #ff1744;
-  color: white;
-  border-color: #ff1744;
-}
-.app-container.dark .rename-modal-content p {
-  color: #cccccc;
 }
 .tooltip.tooltip-bottom.active .tool-button i {
   color: #03dac6;
@@ -779,7 +838,7 @@ body {
   flex-shrink: 0;
 }
 .code-view-footer {
-  margin-top: 28px;
+  margin: 28px 0;
   font-size: 14px;
   color: #666666;
   display: flex;
@@ -804,7 +863,7 @@ body {
   align-items: center;
   font-size: 14px;
   color: #333333;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin: 5px;
 }
@@ -828,7 +887,7 @@ body {
   font-size: 13px;
   color: #333333;
   background-color: #ffffff;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
 }
 .select-all-button.selected .checkbox-circle {
   border-color: #6200ee;
@@ -909,8 +968,6 @@ body {
   border-radius: 5px;
   z-index: 1000;
 }
-
-/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .app-container {
     max-width: calc(100vw - 30px);
@@ -1000,32 +1057,39 @@ body {
     max-width: 100%;
     overflow-x: hidden;
   }
-  .password-modal-content {
+  .password-modal-content,
+  .share-modal-content {
     width: 90%;
     padding: 20px;
   }
+  .password-modal-buttons button {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .share-modal-buttons button {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .share-modal-content > button:last-child {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 }
-
 .slide-notification {
   position: fixed;
   top: 20px;
-  right: -300px; /* Start off-screen */
-  background: linear-gradient(
-    135deg,
-    #333,
-    #555
-  ); /* Cool gradient background */
+  right: -300px;
+  background: linear-gradient(135deg, #333, #555);
   color: white;
   padding: 15px 25px;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  font-family: "Tilt Neon", sans-serif; /* Cool font family */
+  font-family: "Tilt Neon", sans-serif;
   font-size: 16px;
   animation: slideInOut 2s ease-in-out forwards;
   z-index: 1001;
-  transition: all 0.3s ease; /* Smooth transition */
+  transition: all 0.3s ease;
 }
-
 @keyframes slideInOut {
   0% {
     right: -300px;

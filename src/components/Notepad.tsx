@@ -383,12 +383,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           {saveError && <p className="error-message">{saveError}</p>}
           {showSetPasswordModal && (
             <div id="password-set-modal" className="password-modal">
-              <span
-                className="close"
-                onClick={handleCancelPassword}
-                title="Close Modal">
-                &times;
-              </span>
               <div className="password-modal-content">
                 <h3>Set Password</h3>
                 <p>Choose a strong password to secure your note.</p>
@@ -415,12 +409,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           )}
           {showVerifyPasswordModal && (
             <div id="password-verify-modal" className="password-modal">
-              <span
-                className="close"
-                onClick={handleCancelPassword}
-                title="Close Modal">
-                &times;
-              </span>
               <div className="password-modal-content">
                 <h3>Enter Password</h3>
                 <p>Enter the password to access this secure note.</p>
@@ -447,23 +435,23 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           )}
           {showShareModal && (
             <div id="share-modal" className="share-modal">
-              <span
-                className="close"
-                onClick={handleCancelShare}
-                title="Close Modal">
-                &times;
-              </span>
               <div className="share-modal-content">
                 <h3>Share Note</h3>
                 <p>Select a view to share this note.</p>
                 <div className="share-modal-buttons">
-                  <button onClick={() => handleCopyShareLink("raw")}>
+                  <button
+                    className="view-raw"
+                    onClick={() => handleCopyShareLink("raw")}>
                     Raw View
                   </button>
-                  <button onClick={() => handleCopyShareLink("markdown")}>
+                  <button
+                    className="view-markdown"
+                    onClick={() => handleCopyShareLink("markdown")}>
                     Markdown View
                   </button>
-                  <button onClick={() => handleCopyShareLink("code")}>
+                  <button
+                    className="view-code"
+                    onClick={() => handleCopyShareLink("code")}>
                     Code View
                   </button>
                 </div>
@@ -481,13 +469,15 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             <button className="tool-button" onClick={decreaseFontSize}>
               <i className="fas fa-minus"></i>
             </button>
-            <button className="tool-button" onClick={viewRaw}>
+            <button className="tool-button view-raw" onClick={viewRaw}>
               <i className="fas fa-file"></i>
             </button>
-            <button className="tool-button" onClick={viewMarkdown}>
+            <button
+              className="tool-button view-markdown"
+              onClick={viewMarkdown}>
               <i className="fab fa-markdown"></i>
             </button>
-            <button className="tool-button" onClick={viewCode}>
+            <button className="tool-button view-code" onClick={viewCode}>
               <i className="fas fa-code"></i>
             </button>
           </div>
