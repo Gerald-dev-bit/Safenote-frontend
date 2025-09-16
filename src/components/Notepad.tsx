@@ -27,6 +27,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
   const [charCount, setCharCount] = useState(0);
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [password, setPassword] = useState("");
   const [verifiedPassword, setVerifiedPassword] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState("");
@@ -241,6 +242,64 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     window.open(`/Code/${noteId}`, "_blank");
   };
 
+  const handleCopyEditableLink = () => {
+    const editableLink = `${window.location.origin}/${noteId}`;
+    navigator.clipboard
+      .writeText(editableLink)
+      .then(() => {
+        setNotification("Editable link copied to clipboard!");
+        setTimeout(() => setNotification(""), 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy editable link: ", err);
+        setNotification("Failed to copy link.");
+        setTimeout(() => setNotification(""), 2000);
+      });
+  };
+
+  const handleShareLink = () => {
+    setShowShareModal(true);
+  };
+
+  const handleCopyShareLink = (format: string) => {
+    const baseUrl = window.location.origin;
+    let shareLink: string;
+    switch (format) {
+      case "raw":
+        shareLink = `${baseUrl}/Raw/${noteId}`;
+        break;
+      case "markdown":
+        shareLink = `${baseUrl}/Markdown/${noteId}`;
+        break;
+      case "code":
+        shareLink = `${baseUrl}/Code/${noteId}`;
+        break;
+      default:
+        shareLink = `${baseUrl}/Raw/${noteId}`;
+    }
+    navigator.clipboard
+      .writeText(shareLink)
+      .then(() => {
+        setNotification(
+          `${
+            format.charAt(0).toUpperCase() + format.slice(1)
+          } view link copied to clipboard!`
+        );
+        setShowShareModal(false);
+        setTimeout(() => setNotification(""), 2000);
+      })
+      .catch((err) => {
+        console.error(`Failed to copy ${format} link: `, err);
+        setNotification("Failed to copy link.");
+        setShowShareModal(false);
+        setTimeout(() => setNotification(""), 2000);
+      });
+  };
+
+  const handleCancelShare = () => {
+    setShowShareModal(false);
+  };
+
   return (
     <>
       <div
@@ -326,6 +385,26 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
               </div>
             </div>
           )}
+          {showShareModal && (
+            <div className="password-modal">
+              <div className="password-modal-content">
+                <h3>Share Note</h3>
+                <p>Select a format to share:</p>
+                <div className="password-modal-buttons">
+                  <button onClick={() => handleCopyShareLink("raw")}>
+                    Raw
+                  </button>
+                  <button onClick={() => handleCopyShareLink("markdown")}>
+                    Markdown
+                  </button>
+                  <button onClick={() => handleCopyShareLink("code")}>
+                    Code
+                  </button>
+                  <button onClick={handleCancelShare}>Cancel</button>
+                </div>
+              </div>
+            </div>
+          )}
           {saveError && <p className="error-message">{saveError}</p>}
           <div className="edit-tools">
             <div
@@ -372,10 +451,10 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         <footer className="bottom-bar">
           <div className="center-content">
             <div className="links">
-              <button className="link-button">
+              <button className="link-button" onClick={handleCopyEditableLink}>
                 <i className="fas fa-link"></i> Editable Link
               </button>
-              <button className="link-button">
+              <button className="link-button" onClick={handleShareLink}>
                 <i className="fas fa-share-alt"></i> Share Link
               </button>
             </div>

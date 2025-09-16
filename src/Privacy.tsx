@@ -23,7 +23,7 @@ const Privacy = () => {
           fontWeight: 400,
         }}>
         <h2
-          style={{ textAlign: "center", fontSize: "18px", fontWeight: "800" }}>
+          style={{ textAlign: "center", fontSize: "18px", fontWeight: "bold" }}>
           Privacy Policy
         </h2>
         <p>

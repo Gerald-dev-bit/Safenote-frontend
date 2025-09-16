@@ -23,7 +23,7 @@ const About = () => {
           fontWeight: 400,
         }}>
         <h2
-          style={{ textAlign: "center", fontSize: "18px", fontWeight: "800" }}>
+          style={{ textAlign: "center", fontSize: "18px", fontWeight: "bold" }}>
           About Us
         </h2>
         <p>
