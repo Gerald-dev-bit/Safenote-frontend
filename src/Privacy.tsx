@@ -15,8 +15,8 @@ const Privacy = () => {
         style={{
           padding: "20px 40px",
           fontFamily: "monospace",
-          fontSize: "13px",
-          color: "#cccccc",
+          fontSize: "15px",
+          color: "#333131ff",
           textAlign: "justify",
           maxWidth: "800px",
           margin: "0 auto",

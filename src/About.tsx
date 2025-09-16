@@ -13,12 +13,12 @@ const About = () => {
       </div>
       <div
         style={{
-          padding: "20px 40px 40px 40px",
+          padding: "20px 40px 60px",
           fontFamily: "monospace",
-          fontSize: "13px",
-          color: "#cccccc",
+          fontSize: "15px",
+          color: "#333131ff",
           textAlign: "justify",
-          maxWidth: "800px",
+          maxWidth: "1200px",
           margin: "0 auto",
           fontWeight: 600,
         }}>

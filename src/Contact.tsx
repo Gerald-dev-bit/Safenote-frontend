@@ -66,7 +66,7 @@ const Contact = () => {
       </h2>
       <p
         style={{
-          color: "#555",
+          color: "#333131ff",
           fontSize: "16px",
           marginBottom: "30px",
           fontFamily: "'Poppins', sans-serif",
