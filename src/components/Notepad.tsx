@@ -1,9 +1,13 @@
+// src/components/Notepad.tsx
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-axios.defaults.baseURL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+let baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+if (!/^https?:\/\//i.test(baseURL)) {
+  baseURL = "http://" + baseURL;
+}
+axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 
 interface NotepadProps {
@@ -498,6 +502,12 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
             </div>
           </div>
         </footer>
+      </div>
+      <div className="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
+        <a href="/about">About</a>
       </div>
       {notification && <div className="slide-notification">{notification}</div>}
     </>

@@ -2,8 +2,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
-axios.defaults.baseURL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+let baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+if (!/^https?:\/\//i.test(baseURL)) {
+  baseURL = "http://" + baseURL;
+}
+axios.defaults.baseURL = baseURL;
 
 interface CodeViewProps {
   noteId: string;

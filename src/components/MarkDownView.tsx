@@ -3,8 +3,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
-axios.defaults.baseURL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+let baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+if (!/^https?:\/\//i.test(baseURL)) {
+  baseURL = "http://" + baseURL;
+}
+axios.defaults.baseURL = baseURL;
 
 interface MarkdownViewProps {
   noteId: string;
