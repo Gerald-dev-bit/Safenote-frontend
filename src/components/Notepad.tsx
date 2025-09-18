@@ -12,6 +12,7 @@ axios.defaults.withCredentials = true;
 
 interface NotepadProps {
   noteId: string;
+  isTurnstileVerified: boolean; // New prop
 }
 
 function generateRandomId(length = 8): string {
@@ -23,7 +24,7 @@ function generateRandomId(length = 8): string {
   return id;
 }
 
-const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
+const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
   const [content, setContent] = useState("");
   const [savedContent, setSavedContent] = useState<string | null>(null);
   const [wordCount, setWordCount] = useState(0);
@@ -59,7 +60,8 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         const response = await axios.get(`/api/notes/${noteId}`);
         const requiresPassword = response.data.requiresPassword;
         setIsPasswordSet(requiresPassword);
-        if (requiresPassword) {
+        // Updated: Only show modal if Turnstile is verified AND password required
+        if (requiresPassword && isTurnstileVerified) {
           setShowVerifyPasswordModal(true);
           const verifyModal = document.getElementById("password-verify-modal");
           if (verifyModal) verifyModal.style.display = "block";
@@ -81,7 +83,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
       }
     };
     fetchNote();
-  }, [noteId]);
+  }, [noteId, isTurnstileVerified]); // Added isTurnstileVerified to deps
 
   useEffect(() => {
     if (saveTimeout.current) {
@@ -111,9 +113,14 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
           setVerifyError(
             "Password required or incorrect. Please verify again."
           );
-          setShowVerifyPasswordModal(true);
-          const verifyModal = document.getElementById("password-verify-modal");
-          if (verifyModal) verifyModal.style.display = "block";
+          // Updated: Only show modal if Turnstile is verified
+          if (isTurnstileVerified) {
+            setShowVerifyPasswordModal(true);
+            const verifyModal = document.getElementById(
+              "password-verify-modal"
+            );
+            if (verifyModal) verifyModal.style.display = "block";
+          }
           setVerifiedPassword(null);
         } else if (
           axios.isAxiosError(error) &&
@@ -131,7 +138,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
         clearTimeout(saveTimeout.current);
       }
     };
-  }, [content, noteId, verifiedPassword, savedContent]);
+  }, [content, noteId, verifiedPassword, savedContent, isTurnstileVerified]); // Added isTurnstileVerified to deps
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
@@ -212,6 +219,11 @@ const Notepad: React.FC<NotepadProps> = ({ noteId }) => {
     if (verifyModal) verifyModal.style.display = "none";
     setPassword("");
     setVerifyError("");
+    // New: Show notification only if canceling the verify password modal
+    if (showVerifyPasswordModal) {
+      setNotification("Verify password to see notes.");
+      setTimeout(() => setNotification(""), 3000);
+    }
   };
 
   const openSetPasswordModal = () => {
