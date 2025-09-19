@@ -1122,8 +1122,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background: #151615;
+  height: 100%;background: #878b84;
   /* backdrop-filter: blur(8px); */
   display: flex;
   justify-content: center;
@@ -1132,7 +1131,7 @@ body {
 }
 
 .turnstile-modal {
-  background: #252724;
+  background: #151615;
   /* backdrop-filter: blur(8px); */
   padding: 2rem;
   border-radius: 6px;
