@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="public/safenote.ico" />
+    <link rel="icon" type="image/svg+xml" href="/public/safenote.ico" />
     <link
       href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap"
       rel="stylesheet" />
@@ -39,8 +39,9 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Synchronous load for unmanaged/explicit render to ensure window.turnstile is ready -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
+    <script
+      defer
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
     <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

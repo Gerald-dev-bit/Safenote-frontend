@@ -72,7 +72,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
           setVerifiedPassword(null);
         }
       } catch (error) {
-        console.error("Error fetching note:", error);
         setContent("");
         setSavedContent("");
         if (axios.isAxiosError(error) && error.response?.status === 500) {
@@ -108,7 +107,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
           setSaveError("");
         }
       } catch (error) {
-        console.error("Error saving note:", error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           setVerifyError(
             "Password required or incorrect. Please verify again."
@@ -172,7 +170,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
           setVerifyError("");
         }
       } catch (error) {
-        console.error("Error setting password:", error);
         if (axios.isAxiosError(error) && error.response?.status === 400) {
           setVerifyError("Password already set for this note.");
         } else {
@@ -199,7 +196,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       setPassword("");
       setVerifyError("");
     } catch (error) {
-      console.error("Error verifying password:", error);
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setVerifyError("Wrong password. Try again.");
       } else if (axios.isAxiosError(error) && error.response?.status === 400) {
@@ -281,8 +277,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
         setNotification("Editable link copied to clipboard!");
         setTimeout(() => setNotification(""), 2000);
       })
-      .catch((err) => {
-        console.error("Failed to copy editable link: ", err);
+      .catch((_) => {
         setNotification("Failed to copy link.");
         setTimeout(() => setNotification(""), 2000);
       });
@@ -323,8 +318,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
         if (shareModal) shareModal.style.display = "none";
         setTimeout(() => setNotification(""), 2000);
       })
-      .catch((err) => {
-        console.error(`Failed to copy ${format} link: `, err);
+      .catch((_) => {
         setNotification("Failed to copy link.");
         setShowShareModal(false);
         const shareModal = document.getElementById("share-modal");

@@ -1248,7 +1248,7 @@ body {
 .turnstile-security-message {
   font-size: 18px;
   color: #d1c2c2;
-  margin-top: 150px;
+  margin-top: 50px;
   line-height: 1.2;
   font-family: "Rubik", sans-serif;
   text-align: center;
@@ -1263,8 +1263,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin: 24px 0;
-  margin-top: 20px;
+  margin-bottom: 0px;
+  margin-top: 18px;
   padding-bottom: -10px;
   width: 100%;
 }
@@ -1273,7 +1273,7 @@ body {
   font-size: 28px;
   color: #00ff88;
   animation: bounceIn 0.5s ease-out;
-  margin: 7px 0;
+  margin: 0;
 }
 
 @keyframes bounceIn {
@@ -1304,14 +1304,14 @@ body {
 }
 
 .turnstile-footer {
-  margin-top: auto;
+  margin-top: 50px;
   text-align: center;
   color: #999999;
   font-size: 12px;
   line-height: 1.4;
   width: 100%;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 16px;
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1326,24 +1326,24 @@ body {
 
 .turnstile-modal button {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #6200ee, #bb86fc);
-  color: #ffffff;
+  background: linear-gradient(135deg, #b0b0b0, #b0b0b0);
+  color: #0e0d0d;
   border: none;
   cursor: pointer;
   font-size: 14px;
   font-family: "Poppins", sans-serif;
-  border-radius: 25px;
+  border-radius: 9px;
   font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(98, 0, 238, 0.3);
+  /* box-shadow: 0 4px 15px rgba(98, 0, 238, 0.3); */
   min-width: 100px;
 }
 
-.turnstile-modal button:hover:not(:disabled) {
+/* .turnstile-modal button:hover:not(:disabled) {
   background: linear-gradient(135deg, #bb86fc, #6200ee);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(98, 0, 238, 0.4);
-}
+} */
 
 .turnstile-modal button:disabled {
   background: linear-gradient(135deg, #4a4a4a, #6a6a6a);
