@@ -75,16 +75,16 @@ const RawView: React.FC<RawViewProps> = ({ noteId }) => {
   };
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="error-message">{error}</div>;
   }
 
   if (accessDenied) {
-    return <div>Access denied.</div>;
+    return <div className="access-denied">Access denied.</div>;
   }
 
   return (
     <>
-      <div className="raw-view-container">
+      <div className="view-container raw-view-container">
         <pre className="raw-view-pre" ref={preRef}>
           {content}
         </pre>

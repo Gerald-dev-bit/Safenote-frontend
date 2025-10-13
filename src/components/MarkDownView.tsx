@@ -75,16 +75,16 @@ const MarkdownView: React.FC<MarkdownViewProps> = ({ noteId }) => {
   };
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="error-message">{error}</div>;
   }
 
   if (accessDenied) {
-    return <div>Access denied.</div>;
+    return <div className="access-denied">Access denied.</div>;
   }
 
   return (
     <>
-      <div className="markdown-view-container">
+      <div className="view-container markdown-view-container">
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
       {showVerifyPasswordModal && (

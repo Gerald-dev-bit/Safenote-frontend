@@ -11,21 +11,8 @@ const Privacy = () => {
       <div className="top-bar" style={{ justifyContent: "center" }}>
         <div className="logo">Safenote</div>
       </div>
-      <div
-        style={{
-          padding: "20px 40px",
-          fontFamily: "monospace",
-          fontSize: "14px",
-          color: "#535151ff",
-          textAlign: "justify",
-          maxWidth: "1000px",
-          margin: "0 auto",
-          fontWeight: 400,
-        }}>
-        <h2
-          style={{ textAlign: "center", fontSize: "18px", fontWeight: "bold" }}>
-          Privacy Policy
-        </h2>
+      <div className="static-page-content">
+        <h2>Privacy Policy</h2>
         <p>
           This Privacy Policy governs the manner in which Safenote collects,
           uses, maintains and discloses information collected from users (each,

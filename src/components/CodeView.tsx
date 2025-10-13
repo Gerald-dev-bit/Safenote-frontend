@@ -127,11 +127,11 @@ const CodeView: React.FC<CodeViewProps> = ({ noteId }) => {
   };
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="error-message">{error}</div>;
   }
 
   if (accessDenied) {
-    return <div>Access denied.</div>;
+    return <div className="access-denied">Access denied.</div>;
   }
 
   const lines = content.split("\n");
@@ -169,7 +169,7 @@ const CodeView: React.FC<CodeViewProps> = ({ noteId }) => {
 
   return (
     <>
-      <div className="code-view-container">
+      <div className="view-container code-view-container">
         <div className="code-view-header">Written by Anonymous</div>
         <hr className="code-view-divider" />
         <pre className="code-view-pre" ref={preRef}>
@@ -183,18 +183,19 @@ const CodeView: React.FC<CodeViewProps> = ({ noteId }) => {
             </span>{" "}
             - <span>cheat sheet</span>
           </span>
-          <button
-            className={`select-all-button ${isSelected ? "selected" : ""}`}
-            onClick={toggleSelectAll}>
-            <span className="checkbox-circle">{isSelected ? "✔" : ""}</span>
-            {isSelected ? "Deselect All" : "Select All"}
-          </button>
-          <button
-            className="select-all-button"
-            onClick={handleCopy}
-            style={{ marginLeft: "10px" }}>
-            Copy Selected
-          </button>
+          <div className="footer-right">
+            <button
+              className={`select-all-button ${isSelected ? "selected" : ""}`}
+              onClick={toggleSelectAll}>
+              <span className="checkbox-circle">{isSelected ? "✔" : ""}</span>
+              {isSelected ? "Deselect All" : "Select All"}
+            </button>
+            <button
+              className="select-all-button copy-button"
+              onClick={handleCopy}>
+              Copy Selected
+            </button>
+          </div>
         </div>
       </div>
       {showVerifyPasswordModal && (

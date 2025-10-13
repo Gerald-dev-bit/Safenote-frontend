@@ -1,3 +1,4 @@
+//src/App.tsx
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Notepad from "./components/Notepad";
 import RawView from "./components/Rawview";
@@ -55,33 +56,78 @@ function App() {
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
   const lastActivityTime = useRef(Date.now());
   const wasOffline = useRef(false);
-  const FIVE_MINUTES = 5 * 60 * 1000;
+  const THIRTY_MINUTES = 30 * 60 * 1000;
+  const ONE_HOUR = 60 * 60 * 1000;
   // Check if verification is needed (timestamp expired)
   const needsVerification = () => {
     const lastVerified = localStorage.getItem("turnstileLastVerified");
-    return !lastVerified || Date.now() - parseInt(lastVerified) > FIVE_MINUTES;
+    return !lastVerified || Date.now() - parseInt(lastVerified) > ONE_HOUR;
+  };
+  // Check IP change
+  const checkIPChange = async () => {
+    try {
+      console.log("Checking IP change...");
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      const currentIP = data.ip;
+      const verifiedIP = localStorage.getItem("verifiedIP");
+      console.log("Current IP:", currentIP, "Verified IP:", verifiedIP);
+      if (verifiedIP && currentIP !== verifiedIP) {
+        console.log("IP changed, triggering verification");
+        triggerVerification();
+      } else {
+        console.log("IP unchanged, no trigger");
+      }
+    } catch (err) {
+      console.error("Failed to check IP:", err);
+      // Fallback: Trigger on error for safety (e.g., VPN toggle)
+      console.log("IP check failed - Triggering verification as fallback");
+      triggerVerification();
+    }
   };
   // Show modal if needed
   const triggerVerification = () => {
+    console.log("triggerVerification called");
     if (needsVerification()) {
+      console.log("Showing modal via trigger");
       setShowTurnstileModal(true);
       setIsTurnstileVerified(false);
+    } else {
+      console.log("Trigger: No need (timestamp OK)");
     }
   };
   // Reset inactivity timer
   const resetInactivityTimer = () => {
+    console.log("Resetting inactivity timer");
     lastActivityTime.current = Date.now();
     if (inactivityTimer.current) {
       clearTimeout(inactivityTimer.current);
     }
-    inactivityTimer.current = setTimeout(triggerVerification, FIVE_MINUTES);
+    inactivityTimer.current = setTimeout(() => {
+      console.log("Inactivity timeout (30 min) - Checking IP and timestamp");
+      checkIPChange();
+      if (needsVerification()) {
+        console.log("Timer triggered modal!");
+        triggerVerification();
+      } else {
+        console.log("Timer: No need for verification");
+      }
+    }, THIRTY_MINUTES);
   };
   // Initial load/refresh check
   useEffect(() => {
-    if (needsVerification()) {
+    console.log("App useEffect: Checking initial verification...");
+    const lastVerified = localStorage.getItem("turnstileLastVerified");
+    console.log("LocalStorage lastVerified:", lastVerified);
+
+    // TEMP FORCE-TRIGGER FOR TESTING: Always show on load (remove in prod)
+    const forceShowForDev = true; // Set to false when done testing
+    if (forceShowForDev || needsVerification()) {
+      console.log("needsVerification (or force) true - Triggering modal!");
       setShowTurnstileModal(true);
       setIsTurnstileVerified(false);
     } else {
+      console.log("needsVerification false - Skipping modal, starting timer");
       setIsTurnstileVerified(true);
       resetInactivityTimer(); // Start inactivity tracking
     }
@@ -94,20 +140,28 @@ function App() {
     const handleOffline = () => {
       wasOffline.current = true;
     };
-    const handleOnline = () => {
-      if (wasOffline.current && needsVerification()) {
-        triggerVerification();
+    const handleOnline = async () => {
+      if (wasOffline.current) {
+        await checkIPChange();
+        if (needsVerification()) {
+          triggerVerification();
+        }
       }
       wasOffline.current = false;
     };
     window.addEventListener("offline", handleOffline);
     window.addEventListener("online", handleOnline);
     // Page visibility (pause timer if tab inactive)
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = async () => {
       if (!document.hidden) {
         // Page became visible: Check if inactivity exceeded during hidden
-        if (Date.now() - lastActivityTime.current > FIVE_MINUTES) {
-          triggerVerification();
+        if (Date.now() - lastActivityTime.current > THIRTY_MINUTES) {
+          await checkIPChange();
+          if (needsVerification()) {
+            triggerVerification();
+          } else {
+            resetInactivityTimer();
+          }
         } else {
           resetInactivityTimer();
         }
@@ -126,8 +180,16 @@ function App() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-  const handleTurnstileVerify = () => {
+  const handleTurnstileVerify = async () => {
     localStorage.setItem("turnstileLastVerified", Date.now().toString());
+    // Fetch and store current IP
+    try {
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      localStorage.setItem("verifiedIP", data.ip);
+    } catch (err) {
+      console.error("Failed to fetch IP:", err);
+    }
     setShowTurnstileModal(false);
     setIsTurnstileVerified(true);
     resetInactivityTimer(); // Reset inactivity after verification

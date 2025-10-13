@@ -6,6 +6,16 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap"
       rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
+      rel="stylesheet" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -22,17 +32,15 @@
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
       font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
       frame-src https://challenges.cloudflare.com;
-      connect-src 'self' https://api.safenote.xyz http://localhost:5000 https://challenges.cloudflare.com;
+      connect-src 'self' https://api.safenote.xyz http://localhost:5000 https://challenges.cloudflare.com https://api.ipify.org http://localhost:*;
       img-src 'self' data:;
     " />
     <title>Safenote</title>
   </head>
   <body>
     <div id="root"></div>
-    <script
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-      async
-      defer></script>
+    <!-- Synchronous load for unmanaged/explicit render to ensure window.turnstile is ready -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
     <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>
