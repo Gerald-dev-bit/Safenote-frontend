@@ -7,6 +7,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100..400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
 
 *,
@@ -1199,13 +1201,13 @@ body {
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: flex-start;
+  justify-content: center;
   gap: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* border: 1px solid rgba(255, 255, 255, 0.1); */
   animation: slideUpModal 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  padding: 20px;
+  padding: 20px 20px 20px 140px;
   padding-top: 70px;
   box-sizing: border-box;
 }
@@ -1222,53 +1224,71 @@ body {
 }
 
 .turnstile-header {
-  margin-top: 0;
+  margin-top: 40px;
 }
 
 .turnstile-brand {
-  font-size: 30px;
+  font-size: 36px;
   color: #faf8f8;
-  font-weight: 700;
-  font-family: "Josefin", sans-serif;
+  font-weight: 550;
+  font-family: "Josefin Sans", sans-serif;
   margin: 0;
+  margin-bottom: 20px;
   letter-spacing: 1px;
+  text-align: left;
 }
 
 .turnstile-message {
-  font-size: 22px;
-  color: #d1c2c2;
+  font-size: 25px;
+  color: #f3f3f3;
   margin: 16px 0;
-  margin-top: 20px;
-  line-height: 1.2;
-  font-family: "Rubik", sans-serif;
-  max-width: 100%;
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-.turnstile-security-message {
-  font-size: 18px;
-  color: #d1c2c2;
-  margin-top: 50px;
-  line-height: 1.2;
-  font-family: "Rubik", sans-serif;
-  text-align: center;
+  margin-top: 9px;
+  line-height: 1.4;
+  font-family: "Roboto", sans-serif;
   max-width: 100%;
   white-space: nowrap;
   font-weight: 400;
+  text-align: left;
+}
+
+.turnstile-security-message {
+  font-size: 22px;
+  color: #f3f3f3;
+  padding-bottom: 80px;
+  margin-top: 10px;
+  line-height: 1.2;
+  font-family: "Roboto", sans-serif;
+  text-align: left;
+  max-width: 100%;
+  white-space: nowrap;
+  font-weight: 350;
+  width: fit-content;
+  position: relative;
+}
+
+.turnstile-security-message::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 0;
+  width: calc(130% + 100px);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .turnstile-widget-area {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 0px;
-  margin-top: 18px;
-  padding-bottom: -10px;
+  gap: 8px;
+  margin-bottom: 10px;
+  margin-top: -40px;
+  padding-bottom: 0;
+  padding-left: 12px;
   width: 100%;
   flex: 1;
+  text-align: left;
 }
 
 .turnstile-success-tick {
@@ -1305,15 +1325,38 @@ body {
   opacity: 1;
 }
 
+.turnstile-footer-text {
+  margin-top: 40px;
+  text-align: center;
+  color: #b0b0b0;
+  font-size: 9px;
+  line-height: 1.4;
+  width: 100%;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.turnstile-footer-text a {
+  color: #eeeaea;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  text-align: center;
+}
+
+.turnstile-footer-text a:hover {
+  color: #ffffff;
+}
+
 .turnstile-footer {
   margin-top: auto;
   text-align: center;
-  color: #999999;
+  color: #ffffff;
   font-size: 12px;
   line-height: 1.4;
   width: 100%;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 10px;
+  padding-bottom: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1323,7 +1366,8 @@ body {
 .turnstile-footer p {
   margin: 0;
   color: #b0b0b0;
-  font-size: 13px;
+  font-size: 9px;
+  text-align: center;
 }
 
 .turnstile-modal button {
@@ -1543,7 +1587,7 @@ body {
     font-size: 12px;
   }
   .turnstile-modal {
-    padding: 20px;
+    padding: 20px 20px 20px 80px;
     padding-top: 50px;
     gap: 16px;
     width: 100vw;
@@ -1553,7 +1597,7 @@ body {
     margin: 0;
     border-radius: 0;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .turnstile-brand {
@@ -1565,7 +1609,11 @@ body {
     font-size: 18px;
     white-space: normal;
     max-width: 90%;
-    text-align: center;
+    text-align: left;
+  }
+
+  .turnstile-security-message::after {
+    width: 100%;
   }
 
   .turnstile-success-tick {
@@ -1584,6 +1632,18 @@ body {
     padding: 10px 20px;
     font-size: 13px;
     min-width: 90px;
+  }
+
+  .turnstile-footer-text {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    font-size: 11px;
+  }
+
+  .turnstile-widget-area {
+    padding-left: 0;
+    margin-top: -20px;
   }
 }
 
@@ -1741,7 +1801,7 @@ body {
     margin-top: 20px;
   }
   .turnstile-modal {
-    padding: 15px;
+    padding: 15px 15px 15px 60px;
     padding-top: 40px;
     gap: 12px;
     width: 100vw;
@@ -1751,16 +1811,24 @@ body {
     margin: 0;
     border-radius: 0;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: flex-start;
   }
   .turnstile-brand {
     font-size: 24px;
+  }
+
+  .turnstile-header {
+    margin-top: 60px;
   }
   .turnstile-message,
   .turnstile-security-message {
     font-size: 16px;
     white-space: normal;
     max-width: 95%;
+    text-align: left;
+  }
+  .turnstile-security-message::after {
+    width: 100%;
   }
   .turnstile-success-tick {
     font-size: 36px;
@@ -1772,6 +1840,23 @@ body {
     padding: 8px 16px;
     font-size: 12px;
     min-width: 80px;
+  }
+
+  .turnstile-footer-text {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15px;
+    font-size: 10px;
+  }
+
+  .turnstile-widget-area {
+    padding-left: 0px;
+    margin-top: -400px;
+    margin-bottom: -250px;
+  }
+
+  .turnstile-footer {
+    padding-bottom: 40px;
   }
 }
 
