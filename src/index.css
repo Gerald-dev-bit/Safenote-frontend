@@ -1203,11 +1203,11 @@ body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 24px;
+  gap: 18px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   /* border: 1px solid rgba(255, 255, 255, 0.1); */
   animation: slideUpModal 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  padding: 20px 20px 20px 140px;
+  padding: 20px 20px 20px 200px;
   padding-top: 70px;
   box-sizing: border-box;
 }
@@ -1224,44 +1224,44 @@ body {
 }
 
 .turnstile-header {
-  margin-top: 40px;
+  margin-top: 38px;
 }
 
 .turnstile-brand {
-  font-size: 36px;
+  font-size: 28px;
   color: #faf8f8;
   font-weight: 550;
   font-family: "Josefin Sans", sans-serif;
   margin: 0;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   letter-spacing: 1px;
   text-align: left;
 }
 
 .turnstile-message {
-  font-size: 25px;
+  font-size: 21px;
   color: #f3f3f3;
-  margin: 16px 0;
-  margin-top: 9px;
-  line-height: 1.4;
-  font-family: "Roboto", sans-serif;
+  /* margin: 16px 0; */
+  margin-bottom: 28px;
+  line-height: 1.5;
+  font-family: "Montserrat", sans-serif;
   max-width: 100%;
   white-space: nowrap;
-  font-weight: 400;
+  font-weight: 350;
   text-align: left;
 }
 
 .turnstile-security-message {
-  font-size: 22px;
+  font-size: 19px;
   color: #f3f3f3;
-  padding-bottom: 80px;
+  padding-bottom: 100px;
   margin-top: 10px;
   line-height: 1.2;
-  font-family: "Roboto", sans-serif;
+  font-family: "Montserrat", sans-serif;
   text-align: left;
   max-width: 100%;
   white-space: nowrap;
-  font-weight: 350;
+  font-weight: 300;
   width: fit-content;
   position: relative;
 }
@@ -1271,7 +1271,7 @@ body {
   position: absolute;
   bottom: -9px;
   left: 0;
-  width: calc(130% + 100px);
+  width: calc(100% + 100px);
   height: 1px;
   background: rgba(255, 255, 255, 0.5);
 }
