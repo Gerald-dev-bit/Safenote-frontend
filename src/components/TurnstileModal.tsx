@@ -1,17 +1,15 @@
 //src/components/TurnstileModal.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 interface TurnstileModalProps {
   onVerify: () => void;
 }
 const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
-  const [isLoading, setIsLoading] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
   // Backend URL from env
   const backendUrl =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const handleBackendVerify = async (tk: string) => {
-    setIsLoading(true);
     try {
       const response = await fetch(`${backendUrl}/api/notes/verify-turnstile`, {
         method: "POST",
@@ -30,8 +28,6 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
     } catch (err) {
       // On backend error, reset and re-render
       resetAndRender();
-    } finally {
-      setIsLoading(false);
     }
   };
   const resetAndRender = () => {
@@ -40,7 +36,6 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
       window.turnstile.remove(widgetId.current);
     }
     widgetId.current = null;
-    setIsLoading(true);
     renderWidget();
   };
   const renderWidget = () => {
@@ -52,21 +47,16 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
             handleBackendVerify(tk);
           },
           "error-callback": () => {
-            setIsLoading(false);
             resetAndRender();
           },
           "expired-callback": () => {
-            setIsLoading(false);
             resetAndRender();
           },
           theme: "dark",
           size: "normal",
           appearance: "always",
         });
-        // Set loading false immediately after render (widget is now visible)
-        setIsLoading(false);
       } catch (err) {
-        setIsLoading(false);
         resetAndRender();
       }
     }
@@ -89,7 +79,6 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
       // Max wait 5s
       const timeout = setTimeout(() => {
         clearInterval(checkInterval);
-        setIsLoading(false);
         resetAndRender();
       }, 5000);
       return () => {
