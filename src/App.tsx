@@ -63,14 +63,12 @@ function App() {
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
   const lastActivityTime = useRef(Date.now());
   const wasOffline = useRef(false);
-  const THIRTY_MINUTES = 30 * 60 * 1000;
+  const EIGHT_HOURS = 8 * 60 * 60 * 1000;
 
   // Check if verification is needed (timestamp expired)
   const needsVerification = () => {
     const lastVerified = localStorage.getItem("turnstileLastVerified");
-    return (
-      !lastVerified || Date.now() - parseInt(lastVerified) > THIRTY_MINUTES
-    );
+    return !lastVerified || Date.now() - parseInt(lastVerified) > EIGHT_HOURS;
   };
 
   // Show modal if needed
@@ -87,7 +85,7 @@ function App() {
     }
     inactivityTimer.current = setTimeout(() => {
       triggerVerification();
-    }, THIRTY_MINUTES);
+    }, EIGHT_HOURS);
   };
 
   // Initial load/refresh check
@@ -114,7 +112,7 @@ function App() {
     };
     const handleOnline = () => {
       if (wasOffline.current) {
-        if (Date.now() - lastActivityTime.current > THIRTY_MINUTES) {
+        if (Date.now() - lastActivityTime.current > EIGHT_HOURS) {
           triggerVerification();
         }
       }
@@ -127,7 +125,7 @@ function App() {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         // Page became visible: Check if inactivity exceeded during hidden
-        if (Date.now() - lastActivityTime.current > THIRTY_MINUTES) {
+        if (Date.now() - lastActivityTime.current > EIGHT_HOURS) {
           triggerVerification();
         } else {
           resetInactivityTimer();
@@ -163,20 +161,37 @@ function App() {
       {showTurnstileModal && (
         <TurnstileModal onVerify={handleTurnstileVerify} />
       )}
-      <Routes>
-        <Route
-          path="/:noteId"
-          element={<NotepadWrapper isTurnstileVerified={isTurnstileVerified} />}
-        />
-        <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
-        <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
-        <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/" element={<Home />} />
-      </Routes>
+      {isTurnstileVerified ? (
+        <Routes>
+          <Route
+            path="/:noteId"
+            element={
+              <NotepadWrapper isTurnstileVerified={isTurnstileVerified} />
+            }
+          />
+          <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
+          <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
+          <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+            fontFamily: '"Josefin Sans", sans-serif',
+            fontSize: "18px",
+            color: "#666",
+          }}>
+          Loading Safenote...
+        </div>
+      )}
     </>
   );
 }
