@@ -101,13 +101,11 @@ function App() {
       setIsTurnstileVerified(true);
       resetInactivityTimer(); // Start inactivity tracking
     }
-
     // Activity listeners
     const events = ["mousemove", "keydown", "scroll", "touchstart"];
     events.forEach((event) =>
       window.addEventListener(event, resetInactivityTimer, true)
     );
-
     // Network listeners
     const handleOffline = () => {
       wasOffline.current = true;
@@ -122,7 +120,6 @@ function App() {
     };
     window.addEventListener("offline", handleOffline);
     window.addEventListener("online", handleOnline);
-
     // Page visibility (pause timer if tab inactive)
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -135,10 +132,8 @@ function App() {
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
     // Initial timer setup
     resetInactivityTimer();
-
     return () => {
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
       events.forEach((event) =>
@@ -163,20 +158,24 @@ function App() {
       {showTurnstileModal && (
         <TurnstileModal onVerify={handleTurnstileVerify} />
       )}
-      <Routes>
-        <Route
-          path="/:noteId"
-          element={<NotepadWrapper isTurnstileVerified={isTurnstileVerified} />}
-        />
-        <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
-        <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
-        <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/" element={<Home />} />
-      </Routes>
+      {isTurnstileVerified && (
+        <Routes>
+          <Route
+            path="/:noteId"
+            element={
+              <NotepadWrapper isTurnstileVerified={isTurnstileVerified} />
+            }
+          />
+          <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
+          <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
+          <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      )}
     </>
   );
 }
