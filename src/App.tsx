@@ -10,7 +10,6 @@ import Contact from "./Contact";
 import About from "./About";
 import TurnstileModal from "./components/TurnstileModal";
 import { useEffect, useState, useRef } from "react";
-
 function generateRandomId(length = 8) {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let id = "";
@@ -19,7 +18,6 @@ function generateRandomId(length = 8) {
   }
   return id;
 }
-
 function Home() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -28,7 +26,6 @@ function Home() {
   }, [navigate]);
   return null;
 }
-
 function NotepadWrapper({
   isTurnstileVerified,
 }: {
@@ -38,25 +35,21 @@ function NotepadWrapper({
   const noteId = originalNoteId?.toLowerCase() || "default";
   return <Notepad noteId={noteId} isTurnstileVerified={isTurnstileVerified} />;
 }
-
 function RawViewWrapper() {
   const { noteId: originalNoteId } = useParams<{ noteId: string }>();
   const noteId = originalNoteId?.toLowerCase() || "default";
   return <RawView noteId={noteId} />;
 }
-
 function MarkdownViewWrapper() {
   const { noteId: originalNoteId } = useParams<{ noteId: string }>();
   const noteId = originalNoteId?.toLowerCase() || "default";
   return <MarkdownView noteId={noteId} />;
 }
-
 function CodeViewWrapper() {
   const { noteId: originalNoteId } = useParams<{ noteId: string }>();
   const noteId = originalNoteId?.toLowerCase() || "default";
   return <CodeView noteId={noteId} />;
 }
-
 function App() {
   const [showTurnstileModal, setShowTurnstileModal] = useState(false);
   const [isTurnstileVerified, setIsTurnstileVerified] = useState(false);
@@ -64,7 +57,6 @@ function App() {
   const lastActivityTime = useRef(Date.now());
   const wasOffline = useRef(false);
   const THIRTY_MINUTES = 30 * 60 * 1000;
-
   // Check if verification is needed (timestamp expired)
   const needsVerification = () => {
     const lastVerified = localStorage.getItem("turnstileLastVerified");
@@ -72,13 +64,11 @@ function App() {
       !lastVerified || Date.now() - parseInt(lastVerified) > THIRTY_MINUTES
     );
   };
-
   // Show modal if needed
   const triggerVerification = () => {
     setShowTurnstileModal(true);
     setIsTurnstileVerified(false);
   };
-
   // Reset inactivity timer
   const resetInactivityTimer = () => {
     lastActivityTime.current = Date.now();
@@ -89,25 +79,20 @@ function App() {
       triggerVerification();
     }, THIRTY_MINUTES);
   };
-
   // Initial load/refresh check
   useEffect(() => {
-    // TEMP FORCE-TRIGGER FOR TESTING: Always show on load (remove in prod)
-    const forceShowForDev = false; // Set to false when done testing
-    if (forceShowForDev || needsVerification()) {
+    if (needsVerification()) {
       setShowTurnstileModal(true);
       setIsTurnstileVerified(false);
     } else {
       setIsTurnstileVerified(true);
       resetInactivityTimer(); // Start inactivity tracking
     }
-
     // Activity listeners
     const events = ["mousemove", "keydown", "scroll", "touchstart"];
     events.forEach((event) =>
       window.addEventListener(event, resetInactivityTimer, true)
     );
-
     // Network listeners
     const handleOffline = () => {
       wasOffline.current = true;
@@ -122,7 +107,6 @@ function App() {
     };
     window.addEventListener("offline", handleOffline);
     window.addEventListener("online", handleOnline);
-
     // Page visibility (pause timer if tab inactive)
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -135,10 +119,8 @@ function App() {
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
     // Initial timer setup
     resetInactivityTimer();
-
     return () => {
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
       events.forEach((event) =>
@@ -149,7 +131,6 @@ function App() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-
   const handleTurnstileVerify = () => {
     localStorage.setItem("turnstileLastVerified", Date.now().toString());
     setShowTurnstileModal(false);
@@ -157,28 +138,31 @@ function App() {
     resetInactivityTimer(); // Reset inactivity after verification
     wasOffline.current = false; // Reset network flag
   };
-
   return (
     <>
       {showTurnstileModal && (
         <TurnstileModal onVerify={handleTurnstileVerify} />
       )}
-      <Routes>
-        <Route
-          path="/:noteId"
-          element={<NotepadWrapper isTurnstileVerified={isTurnstileVerified} />}
-        />
-        <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
-        <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
-        <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/" element={<Home />} />
-      </Routes>
+      {/* Hide app UI until verified (components still mount/fetch in parallel) */}
+      <div style={{ display: isTurnstileVerified ? "block" : "none" }}>
+        <Routes>
+          <Route
+            path="/:noteId"
+            element={
+              <NotepadWrapper isTurnstileVerified={isTurnstileVerified} />
+            }
+          />
+          <Route path="/Raw/:noteId" element={<RawViewWrapper />} />
+          <Route path="/Markdown/:noteId" element={<MarkdownViewWrapper />} />
+          <Route path="/Code/:noteId" element={<CodeViewWrapper />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </div>
     </>
   );
 }
-
 export default App;

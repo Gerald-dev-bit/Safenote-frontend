@@ -2,19 +2,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 let baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 if (!/^https?:\/\//i.test(baseURL)) {
   baseURL = "http://" + baseURL;
 }
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
-
 interface NotepadProps {
   noteId: string;
   isTurnstileVerified: boolean; // New prop
 }
-
 function generateRandomId(length = 8): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let id = "";
@@ -23,7 +20,6 @@ function generateRandomId(length = 8): string {
   }
   return id;
 }
-
 const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
   const [content, setContent] = useState("");
   const [savedContent, setSavedContent] = useState<string | null>(null);
@@ -47,29 +43,28 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const navigate = useNavigate();
   const saveTimeout = useRef<number | null>(null);
-
   useEffect(() => {
     if (noteId !== noteId.toLowerCase()) {
       navigate(`/${noteId.toLowerCase()}`);
     }
   }, [noteId, navigate]);
-
+  // Fetch note once on mount, set content only if no password required
   useEffect(() => {
     const fetchNote = async () => {
       try {
         const response = await axios.get(`/api/notes/${noteId}`);
         const requiresPassword = response.data.requiresPassword;
         setIsPasswordSet(requiresPassword);
-        // Updated: Only show modal if Turnstile is verified AND password required
-        if (requiresPassword && isTurnstileVerified) {
-          setShowVerifyPasswordModal(true);
-          const verifyModal = document.getElementById("password-verify-modal");
-          if (verifyModal) verifyModal.style.display = "block";
-        } else {
+        // Only set content immediately if no password required
+        if (!requiresPassword) {
           setContent(response.data.content || "");
           setSavedContent(response.data.content || "");
           updateCounts(response.data.content || "");
           setVerifiedPassword(null);
+        } else {
+          // Keep empty until password verified
+          setContent("");
+          setSavedContent("");
         }
       } catch (error) {
         setContent("");
@@ -82,17 +77,22 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       }
     };
     fetchNote();
-  }, [noteId, isTurnstileVerified]); // Added isTurnstileVerified to deps
-
+  }, [noteId]); // Removed isTurnstileVerified dep
+  // Show password modal only after Turnstile verified AND password required
+  useEffect(() => {
+    if (isTurnstileVerified && isPasswordSet) {
+      setShowVerifyPasswordModal(true);
+      const verifyModal = document.getElementById("password-verify-modal");
+      if (verifyModal) verifyModal.style.display = "block";
+    }
+  }, [isTurnstileVerified, isPasswordSet]);
   useEffect(() => {
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
-
     if (savedContent === null || content === savedContent) {
       return;
     }
-
     saveTimeout.current = window.setTimeout(async () => {
       try {
         const saveData = verifiedPassword
@@ -130,30 +130,25 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
         }
       }
     }, 500);
-
     return () => {
       if (saveTimeout.current) {
         clearTimeout(saveTimeout.current);
       }
     };
-  }, [content, noteId, verifiedPassword, savedContent, isTurnstileVerified]); // Added isTurnstileVerified to deps
-
+  }, [content, noteId, verifiedPassword, savedContent]); // Removed isTurnstileVerified dep
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     setContent(newContent);
     updateCounts(newContent);
   };
-
   const updateCounts = (text: string) => {
     setCharCount(text.length);
     setWordCount(text.trim().split(/\s+/).filter(Boolean).length);
   };
-
   const createNewNote = () => {
     const newId = generateRandomId();
     navigate(`/${newId}`);
   };
-
   const handleSetPassword = async () => {
     if (password) {
       try {
@@ -180,7 +175,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       setVerifyError("Password cannot be empty.");
     }
   };
-
   const handleVerifyPassword = async () => {
     try {
       const response = await axios.post(`/api/notes/${noteId}/verify`, {
@@ -205,7 +199,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       }
     }
   };
-
   const handleCancelPassword = () => {
     setShowSetPasswordModal(false);
     setShowVerifyPasswordModal(false);
@@ -221,7 +214,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       setTimeout(() => setNotification(""), 3000);
     }
   };
-
   const openSetPasswordModal = () => {
     if (isPasswordSet) {
       setNotification("Password is already set and cannot be changed.");
@@ -232,43 +224,33 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       if (setModal) setModal.style.display = "block";
     }
   };
-
   const toggleSpellCheck = () => {
     setSpellCheckEnabled(!spellCheckEnabled);
   };
-
   const toggleMonospace = () => {
     setMonospaceEnabled(!monospaceEnabled);
   };
-
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
-
   const toggleIpadSize = () => {
     setIsIpadSize(!isIpadSize);
   };
-
   const increaseFontSize = () => {
     setFontSize((prev) => prev + 2);
   };
-
   const decreaseFontSize = () => {
     setFontSize((prev) => Math.max(prev - 2, 8));
   };
-
   const viewRaw = () => {
     window.open(`/Raw/${noteId}`, "_blank");
   };
-
   const viewMarkdown = () => {
     window.open(`/Markdown/${noteId}`, "_blank");
   };
-
   const viewCode = () => {
     window.open(`/Code/${noteId}`, "_blank");
   };
-
   const handleCopyEditableLink = () => {
     const editableLink = `${window.location.origin}/${noteId}`;
     navigator.clipboard
@@ -282,13 +264,11 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
         setTimeout(() => setNotification(""), 2000);
       });
   };
-
   const handleShareLink = () => {
     setShowShareModal(true);
     const shareModal = document.getElementById("share-modal");
     if (shareModal) shareModal.style.display = "block";
   };
-
   const handleCopyShareLink = (format: string) => {
     const baseUrl = window.location.origin;
     let shareLink: string;
@@ -326,13 +306,11 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
         setTimeout(() => setNotification(""), 2000);
       });
   };
-
   const handleCancelShare = () => {
     setShowShareModal(false);
     const shareModal = document.getElementById("share-modal");
     if (shareModal) shareModal.style.display = "none";
   };
-
   const togglePasswordVisibility = (type: "set" | "verify") => {
     if (type === "set") {
       setShowSetPassword(!showSetPassword);
@@ -340,7 +318,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       setShowVerifyPassword(!showVerifyPassword);
     }
   };
-
   return (
     <>
       <div
@@ -519,5 +496,4 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
     </>
   );
 };
-
 export default Notepad;
