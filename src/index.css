@@ -933,6 +933,11 @@ body {
   content: "✔";
   color: #6200ee;
 }
+.loading-spinner {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
 @keyframes fadeInModal {
   from {
     opacity: 0;
