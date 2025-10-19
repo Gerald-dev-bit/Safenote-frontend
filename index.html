@@ -21,12 +21,6 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
       rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -34,15 +28,15 @@
       rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Safenote</title>
-    <!-- Preload Turnstile script for faster loading -->
+    <!-- Preload Turnstile script for faster loading (removes dynamic injection) -->
     <script
       src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
       async
       defer></script>
-    <!-- Updated CSP: Broader allowance for Cloudflare challenge-platform fetches -->
+    <!-- Expanded CSP: Allows Cloudflare Insights/Beacon for Turnstile telemetry -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://challenges.cloudflare.com https://challenges.cloudflare.com/*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; frame-src https://challenges.cloudflare.com https://challenges.cloudflare.com/*; connect-src 'self' https://api.safenote.xyz http://localhost:5000 https://challenges.cloudflare.com https://challenges.cloudflare.com/* https://api.ipify.org http://localhost:*; img-src 'self' data:;" />
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://challenges.cloudflare.com https://challenges.cloudflare.com/* https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; frame-src https://challenges.cloudflare.com https://challenges.cloudflare.com/*; connect-src 'self' https://api.safenote.xyz http://localhost:5000 https://challenges.cloudflare.com https://challenges.cloudflare.com/* https://static.cloudflareinsights.com https://api.ipify.org http://localhost:*; img-src 'self' data:;" />
   </head>
   <body>
     <div id="root"></div>
