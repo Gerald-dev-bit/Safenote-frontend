@@ -86,7 +86,7 @@ body {
   font-size: 16px;
   background: linear-gradient(270deg, #f0f4f8, #d9e2ec, #f0f4f8);
   background-size: 600% 600%;
-  animation: bgAnimation 30s ease infinite;
+  animation: bgAnimation 15s ease infinite;
   overflow-x: hidden;
 }
 @keyframes bgAnimation {
@@ -1146,7 +1146,7 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   font-family: "Tilt Neon", sans-serif;
   font-size: 16px;
-  animation: slideInOut 2s ease-in-out forwards;
+  animation: slideInOut 1s ease-in-out forwards;
   z-index: 1001;
   transition: all 0.3s ease;
 }
