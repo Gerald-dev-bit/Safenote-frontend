@@ -53,7 +53,6 @@ function CodeViewWrapper() {
 function App() {
   const [showTurnstileModal, setShowTurnstileModal] = useState(false);
   const [isTurnstileVerified, setIsTurnstileVerified] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
   const lastActivityTime = useRef(Date.now());
   const wasOffline = useRef(false);
@@ -139,18 +138,12 @@ function App() {
     resetInactivityTimer(); // Reset inactivity after verification
     wasOffline.current = false; // Reset network flag
   };
-  useEffect(() => {
-    if (isTurnstileVerified && isLoading) {
-      // Removed loading spinner - immediate load after verification
-      setIsLoading(false);
-    }
-  }, [isTurnstileVerified, isLoading]);
   return (
     <>
       {showTurnstileModal && (
         <TurnstileModal onVerify={handleTurnstileVerify} />
       )}
-      {/* Hide app UI until verified (no loading delay) */}
+      {/* Hide app UI until verified (components still mount/fetch in parallel) */}
       <div style={{ display: isTurnstileVerified ? "block" : "none" }}>
         <Routes>
           <Route

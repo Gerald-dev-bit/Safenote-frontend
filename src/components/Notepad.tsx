@@ -52,22 +52,14 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
   useEffect(() => {
     const fetchNote = async () => {
       try {
-        // Switched to native fetch for GET to reduce XHR console noise
-        const response = await fetch(`${baseURL}/api/notes/${noteId}`, {
-          method: "GET",
-          credentials: "include", // Matches axios.withCredentials
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const data = await response.json();
-        const requiresPassword = data.requiresPassword;
+        const response = await axios.get(`/api/notes/${noteId}`);
+        const requiresPassword = response.data.requiresPassword;
         setIsPasswordSet(requiresPassword);
         // Only set content immediately if no password required
         if (!requiresPassword) {
-          setContent(data.content || "");
-          setSavedContent(data.content || "");
-          updateCounts(data.content || "");
+          setContent(response.data.content || "");
+          setSavedContent(response.data.content || "");
+          updateCounts(response.data.content || "");
           setVerifiedPassword(null);
         } else {
           // Keep empty until password verified
@@ -77,7 +69,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
       } catch (error) {
         setContent("");
         setSavedContent("");
-        if (error instanceof Error && error.message.includes("500")) {
+        if (axios.isAxiosError(error) && error.response?.status === 500) {
           setSaveError("Server error - please try again later.");
         } else {
           setSaveError("Failed to load note. Please try again.");
