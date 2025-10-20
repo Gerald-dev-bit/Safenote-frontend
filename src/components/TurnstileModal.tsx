@@ -17,6 +17,8 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
   const [message, setMessage] = useState(
     "Verify you are human by completing the action below."
   );
+  const [isVerifying, setIsVerifying] = useState(false); // Track manual execute
+  const [isSuccess, setIsSuccess] = useState(false); // Show tick on success
 
   // Backend URL from env
   const backendUrl =
@@ -24,14 +26,15 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
 
   const handleBackendVerify = async (tk: string) => {
     setMessage("verifying you're human...");
+    setIsVerifying(true);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // Reduced timeout for faster reset
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
     try {
       const response = await fetch(`${backendUrl}/api/notes/verify-turnstile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: tk }),
-        signal: controller.signal, // Abort on timeout
+        signal: controller.signal,
       });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -39,22 +42,30 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
       const data = await response.json();
       if (data.success) {
         setMessage("Successful...");
-        // Immediate close after verification (no delay for instant page display)
-        onVerify(); // Call immediately; brief "Successful..." flash if network fast
+        setIsSuccess(true); // Show tick
+        // Brief delay for UX, then close
+        setTimeout(() => onVerify(), 800);
       } else {
         throw new Error("Backend verification failed");
       }
     } catch (err: any) {
-      console.error("Turnstile backend verification error:", err); // Log for debugging
-      // On backend error or timeout, reset and re-render
+      console.error("Turnstile backend verification error:", err);
       setMessage(
         err.name === "AbortError"
           ? "Verification timed out. Please try again."
           : "Verify you are human by completing the action below."
       );
+      if (err.name !== "AbortError") setIsSuccess(false);
       resetAndRender();
     } finally {
+      setIsVerifying(false);
       clearTimeout(timeoutId);
+    }
+  };
+
+  const handleExecute = () => {
+    if (window.turnstile && widgetId.current && !isVerifying) {
+      window.turnstile.execute(widgetId.current);
     }
   };
 
@@ -64,6 +75,7 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
       window.turnstile.remove(widgetId.current);
     }
     widgetId.current = null;
+    setIsSuccess(false);
     renderWidget();
   };
 
@@ -73,55 +85,54 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
         const options = {
           sitekey: import.meta.env.VITE_CF_TURNSTILE_SITEKEY,
           callback: (tk: string) => {
-            // Set verifying message ONLY after user interaction (checkbox click)
-            setMessage("verifying you're human...");
             handleBackendVerify(tk);
           },
           "error-callback": (errorCode?: string) => {
-            console.error("Turnstile error:", errorCode || "Unknown error"); // Log for debugging (e.g., sitekey/domain issues)
+            console.error("Turnstile error:", errorCode || "Unknown error");
             setMessage("Verify you are human by completing the action below.");
+            setIsSuccess(false);
             resetAndRender();
           },
           "expired-callback": () => {
-            console.warn("Turnstile token expired"); // Log for debugging
+            console.warn("Turnstile token expired");
             setMessage("Verification expired. Please try again.");
+            setIsSuccess(false);
             resetAndRender();
           },
           theme: "dark",
-          size: "compact", // Lighter render for modals
-          appearance: "interaction-only", // Show only on interaction for faster initial load
-          // Omitted execution: Defaults to "render" for auto-execution on load
+          size: "normal", // FIXED: Standard size for visibility
+          appearance: "always", // FIXED: Always show widget (no hide)
+          execution: "execute", // FIXED: Manual execute only (no auto-verify)
+          retry: "auto", // FIXED: Use string "auto" instead of boolean true
         } as const;
         widgetId.current = window.turnstile.render(widgetRef.current, options);
       } catch (err) {
-        console.error("Turnstile render error:", err); // Log for debugging
+        console.error("Turnstile render error:", err);
         setMessage("Verify you are human by completing the action below.");
-        // Retry render after brief delay to avoid loops
         setTimeout(resetAndRender, 500);
       }
     }
   };
 
   useEffect(() => {
-    // Wait for Turnstile to be ready (via onload in HTML), then render immediately
     const init = () => {
-      renderWidget(); // Direct render after load confirmation (no turnstile.ready() needed with defer)
+      renderWidget();
     };
     if (window.turnstileReady || window.turnstile) {
-      init(); // Immediate if onload fired or available
+      init();
     } else {
-      // Minimal poll as safety net (1s max)
+      // FIXED: Slower poll (100ms) to reduce CPU, longer timeout (2s)
       const checkInterval = setInterval(() => {
         if (window.turnstileReady || window.turnstile) {
           clearInterval(checkInterval);
           init();
         }
-      }, 50); // Faster poll interval for quicker detection
+      }, 100);
       const timeout = setTimeout(() => {
         clearInterval(checkInterval);
-        console.error("Turnstile script failed to load"); // Log for debugging
+        console.error("Turnstile script failed to load");
         setMessage("Security check unavailable. Please refresh the page.");
-      }, 1000); // Shorter timeout
+      }, 2000);
       return () => {
         clearInterval(checkInterval);
         clearTimeout(timeout);
@@ -156,6 +167,16 @@ const TurnstileModal: React.FC<TurnstileModalProps> = ({ onVerify }) => {
             className="turnstile-cloudflare-logo"
           />
           <div ref={widgetRef} />
+          {/* FIXED: Manual verify button */}
+          {!isSuccess && !isVerifying && (
+            <button
+              onClick={handleExecute}
+              disabled={!widgetId.current || isVerifying}
+              className="turnstile-verify-button">
+              Verify I'm Human
+            </button>
+          )}
+          {isSuccess && <div className="turnstile-success-tick">✔</div>}
         </div>
         <p className="turnstile-security-message">
           safenote.xyz needs to review the security of your connection before
