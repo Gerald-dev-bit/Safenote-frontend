@@ -1,4 +1,3 @@
-//src/App.tsx
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Notepad from "./components/Notepad";
 import RawView from "./components/Rawview";
@@ -51,19 +50,19 @@ function CodeViewWrapper() {
   return <CodeView noteId={noteId} />;
 }
 function App() {
+  const FIVE_HOURS = 5 * 60 * 60 * 1000; // Moved up: Declare before use in needsVerification
+  // Synchronous initial check for verification need
+  const needsVerification = () => {
+    const lastVerified = localStorage.getItem("turnstileLastVerified");
+    return !lastVerified || Date.now() - parseInt(lastVerified) > FIVE_HOURS;
+  };
+  const initialVerified = !needsVerification();
   const [showTurnstileModal, setShowTurnstileModal] = useState(false);
-  const [isTurnstileVerified, setIsTurnstileVerified] = useState(false);
+  const [isTurnstileVerified, setIsTurnstileVerified] =
+    useState(initialVerified);
   const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
   const lastActivityTime = useRef(Date.now());
   const wasOffline = useRef(false);
-  const THIRTY_MINUTES = 30 * 60 * 1000;
-  // Check if verification is needed (timestamp expired)
-  const needsVerification = () => {
-    const lastVerified = localStorage.getItem("turnstileLastVerified");
-    return (
-      !lastVerified || Date.now() - parseInt(lastVerified) > THIRTY_MINUTES
-    );
-  };
   // Show modal if needed
   const triggerVerification = () => {
     setShowTurnstileModal(true);
@@ -77,17 +76,37 @@ function App() {
     }
     inactivityTimer.current = setTimeout(() => {
       triggerVerification();
-    }, THIRTY_MINUTES);
+    }, FIVE_HOURS); // Updated to 5 hours
   };
-  // Initial load/refresh check
-  useEffect(() => {
-    if (needsVerification()) {
-      setShowTurnstileModal(true);
-      setIsTurnstileVerified(false);
-    } else {
-      setIsTurnstileVerified(true);
-      resetInactivityTimer(); // Start inactivity tracking
+  // Check traffic and decide on initial verification
+  const checkTrafficAndInit = async () => {
+    try {
+      // Fixed: Use correct endpoint path (/api/notes/traffic-status)
+      const response = await fetch("/api/notes/traffic-status");
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const { high } = await response.json();
+      if (high || needsVerification()) {
+        triggerVerification();
+      } else {
+        setIsTurnstileVerified(true);
+        resetInactivityTimer(); // Start inactivity tracking
+      }
+    } catch (error) {
+      console.error("Traffic check failed:", error);
+      // Fallback: Assume low traffic, proceed as normal
+      if (needsVerification()) {
+        triggerVerification();
+      } else {
+        setIsTurnstileVerified(true);
+        resetInactivityTimer();
+      }
     }
+  };
+  // Initial load/refresh check (now includes traffic)
+  useEffect(() => {
+    checkTrafficAndInit();
     // Activity listeners
     const events = ["mousemove", "keydown", "scroll", "touchstart"];
     events.forEach((event) =>
@@ -99,7 +118,8 @@ function App() {
     };
     const handleOnline = () => {
       if (wasOffline.current) {
-        if (Date.now() - lastActivityTime.current > THIRTY_MINUTES) {
+        if (Date.now() - lastActivityTime.current > FIVE_HOURS) {
+          // Updated to 5 hours
           triggerVerification();
         }
       }
@@ -111,7 +131,8 @@ function App() {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         // Page became visible: Check if inactivity exceeded during hidden
-        if (Date.now() - lastActivityTime.current > THIRTY_MINUTES) {
+        if (Date.now() - lastActivityTime.current > FIVE_HOURS) {
+          // Updated to 5 hours
           triggerVerification();
         } else {
           resetInactivityTimer();
@@ -119,8 +140,10 @@ function App() {
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    // Initial timer setup
-    resetInactivityTimer();
+    // Initial timer setup (only if not high traffic)
+    if (!needsVerification()) {
+      resetInactivityTimer();
+    }
     return () => {
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
       events.forEach((event) =>
