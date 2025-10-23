@@ -1,3 +1,4 @@
+//src/App.tsx
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Notepad from "./components/Notepad";
 import RawView from "./components/Rawview";
@@ -50,11 +51,13 @@ function CodeViewWrapper() {
   return <CodeView noteId={noteId} />;
 }
 function App() {
-  const FIVE_HOURS = 5 * 60 * 60 * 1000; // Moved up: Declare before use in needsVerification
+  const THIRTEEN_HOURS = 13 * 60 * 60 * 1000; // Fix: Changed from 5 to 13 hours
   // Synchronous initial check for verification need
   const needsVerification = () => {
     const lastVerified = localStorage.getItem("turnstileLastVerified");
-    return !lastVerified || Date.now() - parseInt(lastVerified) > FIVE_HOURS;
+    return (
+      !lastVerified || Date.now() - parseInt(lastVerified) > THIRTEEN_HOURS
+    );
   };
   const initialVerified = !needsVerification();
   const [showTurnstileModal, setShowTurnstileModal] = useState(false);
@@ -76,13 +79,15 @@ function App() {
     }
     inactivityTimer.current = setTimeout(() => {
       triggerVerification();
-    }, FIVE_HOURS); // Updated to 5 hours
+    }, THIRTEEN_HOURS); // Fix: Updated to 13 hours
   };
-  // Check traffic and decide on initial verification
-  const checkTrafficAndInit = async () => {
+  // Check traffic and decide on initial verification (with retry on fetch fail)
+  const checkTrafficAndInit = async (retry = false) => {
+    // Fix: Add retry param
     try {
-      // Fixed: Use correct endpoint path (/api/notes/traffic-status)
-      const response = await fetch("/api/notes/traffic-status");
+      const response = await fetch(
+        "https://api.safenote.xyz/api/notes/traffic-status"
+      );
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -95,6 +100,11 @@ function App() {
       }
     } catch (error) {
       console.error("Traffic check failed:", error);
+      if (!retry) {
+        // Fix: Retry once on error
+        setTimeout(() => checkTrafficAndInit(true), 500);
+        return;
+      }
       // Fallback: Assume low traffic, proceed as normal
       if (needsVerification()) {
         triggerVerification();
@@ -106,7 +116,11 @@ function App() {
   };
   // Initial load/refresh check (now includes traffic)
   useEffect(() => {
-    checkTrafficAndInit();
+    // New: Force sync check for first visit (shows modal immediately if needed)
+    if (needsVerification()) {
+      triggerVerification();
+    }
+    checkTrafficAndInit(); // Async traffic check (overrides if high)
     // Activity listeners
     const events = ["mousemove", "keydown", "scroll", "touchstart"];
     events.forEach((event) =>
@@ -118,8 +132,8 @@ function App() {
     };
     const handleOnline = () => {
       if (wasOffline.current) {
-        if (Date.now() - lastActivityTime.current > FIVE_HOURS) {
-          // Updated to 5 hours
+        if (Date.now() - lastActivityTime.current > THIRTEEN_HOURS) {
+          // Fix: 13 hours
           triggerVerification();
         }
       }
@@ -131,8 +145,8 @@ function App() {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         // Page became visible: Check if inactivity exceeded during hidden
-        if (Date.now() - lastActivityTime.current > FIVE_HOURS) {
-          // Updated to 5 hours
+        if (Date.now() - lastActivityTime.current > THIRTEEN_HOURS) {
+          // Fix: 13 hours
           triggerVerification();
         } else {
           resetInactivityTimer();
@@ -157,7 +171,7 @@ function App() {
   const handleTurnstileVerify = () => {
     localStorage.setItem("turnstileLastVerified", Date.now().toString());
     setShowTurnstileModal(false);
-    setIsTurnstileVerified(true);
+    setIsTurnstileVerified(true); // Fix: Already immediate; add optimistic unhide if needed
     resetInactivityTimer(); // Reset inactivity after verification
     wasOffline.current = false; // Reset network flag
   };
