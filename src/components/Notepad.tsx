@@ -41,8 +41,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
   const [notification, setNotification] = useState("");
   const [showSetPassword, setShowSetPassword] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
-  // Fix: Add loading state for fetch/modal delay
-  const [isLoadingNote, setIsLoadingNote] = useState(true);
   const navigate = useNavigate();
   const saveTimeout = useRef<number | null>(null);
   useEffect(() => {
@@ -53,7 +51,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
   // Fetch note once on mount, set content only if no password required
   useEffect(() => {
     const fetchNote = async () => {
-      setIsLoadingNote(true); // Fix: Start loading
       try {
         const response = await axios.get(`/api/notes/${noteId}`);
         const requiresPassword = response.data.requiresPassword;
@@ -68,10 +65,6 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
           // Keep empty until password verified
           setContent("");
           setSavedContent("");
-          // Fix: Optimistic - prepare for modal if Turnstile ready
-          if (isTurnstileVerified) {
-            setShowVerifyPasswordModal(true);
-          }
         }
       } catch (error) {
         setContent("");
@@ -81,18 +74,16 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
         } else {
           setSaveError("Failed to load note. Please try again.");
         }
-      } finally {
-        setIsLoadingNote(false); // Fix: End loading
       }
     };
     fetchNote();
-  }, [noteId, isTurnstileVerified]); // Fix: Add isTurnstileVerified dep for optimistic trigger
-  // Show password modal only after Turnstile verified AND password required (or after fetch)
+  }, [noteId]); // Fetch on mount, parallel to verification
+  // Show password modal only after Turnstile verified AND password required
   useEffect(() => {
-    if (isTurnstileVerified && isPasswordSet && !isLoadingNote) {
+    if (isTurnstileVerified && isPasswordSet) {
       setShowVerifyPasswordModal(true);
     }
-  }, [isTurnstileVerified, isPasswordSet, isLoadingNote]); // Fix: Add isLoadingNote to prevent premature show
+  }, [isTurnstileVerified, isPasswordSet]);
   // ... (save useEffect unchanged)
   useEffect(() => {
     if (saveTimeout.current) {
@@ -365,7 +356,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
           <textarea
             value={content}
             onChange={handleChange}
-            placeholder={isLoadingNote ? "Loading note..." : "Start typing..."} // Fix: Show loading placeholder
+            placeholder="Start typing..."
             spellCheck={spellCheckEnabled}
             style={{
               fontFamily: monospaceEnabled
@@ -406,12 +397,7 @@ const Notepad: React.FC<NotepadProps> = ({ noteId, isTurnstileVerified }) => {
             <div id="password-verify-modal" className="password-modal">
               <div className="password-modal-content">
                 <h3>Enter Password</h3>
-                <p>
-                  {isLoadingNote
-                    ? "Loading..."
-                    : "Enter the password to access this secure note."}
-                </p>{" "}
-                {/* Fix: Loading text */}
+                <p>Enter the password to access this secure note.</p>
                 <div className="password-input-wrapper">
                   <input
                     type={showVerifyPassword ? "text" : "password"}
